@@ -1,0 +1,129 @@
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.column {
+    display: flex;
+    flex-direction: column;
+}
+.fullWidthButton {
+    width: 100%;
+    font-size: 2.5vh;
+    padding: 1vh 0;
+    margin-top: 1vh;
+    background: #0F3B53;
+    color: #f8f1e5;
+    border: none;
+    border-radius: 0.3vh;
+}
+.hidden {
+    display: none;
+}
+.pointer {
+    cursor: pointer;
+}
+.margin-right {
+    margin-right: 1.5vh;
+}
+.margin-top {
+    margin-top: 1.5vh;
+}
+.margin-left {
+    margin-left: 1.5vh;
+}
+.margin-bottom {
+    margin-bottom: 1.5vh;
+}
+.width90 {
+    width: 90%;
+}
+.flex-table td {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+.flex-table tr {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    justify-content: space-between;
+}
+.flex-wrap {
+    flex-wrap: wrap
+}
+.wrapper {
+    padding: 2.5vh;
+}
+.slow-spin {
+    animation: fa-spin 6s infinite linear;
+}
+.space-between {
+    justify-content: space-between;
+}
+table {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+td {
+    border: solid 1px #626464;
+}
+td > p:nth-child(2) {
+    padding: 0 0.2vh;
+}
+
+p {
+    margin: 2px 0;
+}
+h3 {
+    margin: 10px 0 5px;
+}
+h4 {
+    margin: 0px 0 5px;
+}
+ul {
+    margin: 0px;
+}
+input {
+    padding: 0.5vh;
+    font-size: 2.5vh;
+    border-radius: 0.3vh;
+    text-align: center;
+    background: #f8f1e5;
+    border: solid 0.1vh #626464;
+}
+button {
+    cursor: pointer;
+}
+body {
+    height: 100vh;
+    width: 100vw;
+    background: #fafafa;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-size: 2.4vh;
+    font-family: Raleway;
+    overflow: hidden;
+}
+#root {
+    text-align: center;
+    height: calc(100% - 7.2vh);
+    background: #FFF9ED;
+    color: #2f3131;
+    position: relative;
+    overflow: hidden;
+    top: 7.2vh;
+    user-select: none;
+}
+.appRoot{
+    height: 100%;
+    overflow-y: auto;
+}

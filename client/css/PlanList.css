@@ -1,0 +1,11 @@
+.planList > .row {
+    align-items: center;
+    padding: 2.5vh 0;
+    justify-content: center;
+    border-bottom: 0.2vh solid;
+    cursor: pointer;
+}
+.planList .planIcon {
+    font-size: 5vh;
+    padding: 0 5vh 0 0;
+}

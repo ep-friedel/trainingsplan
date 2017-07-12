@@ -1,0 +1,83 @@
+.topbar {
+    height: 5vh;
+    justify-content: space-between;
+    background: #426E86;
+    padding: 1vh 2.5vh;
+    border-bottom: solid 0.2vh #aaa;
+    position: fixed;
+    left:0;
+    right:0;
+    top:0;
+    z-index: 1;
+}
+
+.topbarButton {
+    background: #0F3B53;
+    color: #f8f1e5;
+    border: none;
+    border-radius: 0.4vh;
+    font-size: 3vh;
+    padding: 0.9vh 2.5vh 0.5vh;
+    height: 5.1vh;
+    font-family: Raleway;
+}
+
+.menu {
+    width: 4.1vh;
+    height: 4.1vh;
+    overflow: hidden;
+    background: #0F3B53;
+    border-radius: 0.4vh;
+    z-index: 1;
+    padding: 0.5vh;
+    color: #f8f1e5;
+}
+
+.menuButton.menuButton {
+    height: 3vh;
+    padding: 1vh 0.55vh 0.1vh;
+    background: #0F3B53;
+    border-radius: 0.4vh;
+    float: right;
+    font-size: 3.5vh;
+}
+
+.menu.open {
+    width: auto;
+    height: auto;
+    position: absolute;
+    right: 2.5vh;
+    padding: 0.5vh 0.5vh 2.5vh;
+}
+
+.menuList {
+    margin-top: 0.3vh;
+    list-style: none;
+    padding: 0;
+}
+.menuName {
+    font-size: 3vh;
+    display: inline-block;
+    margin-top: 0.4vh;
+    width: calc(100% - 4.2vh);
+    overflow: hidden;
+}
+
+.menuList li:hover {
+    background: #75A1B9;
+}
+
+.menuList li {
+    display: flex;
+    justify-content: flex-start;
+    padding: 1vh 4.5vh 1vh 1.5vh;
+    background: #426E86;
+    color: #f8f1e5;
+    margin-top: 0.5vh;
+}
+@media (min-aspect-ratio: 4/3) {
+    .menu {
+        width: auto;
+        padding: 0.5vh 0.5vh;
+    }
+}
