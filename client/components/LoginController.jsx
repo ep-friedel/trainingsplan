@@ -20,6 +20,10 @@ const planOptions = [
     }
 ];
 
+const   dom = document.querySelector.bind(document),
+        salt= 'This is my awesome Client Side Salt and so on.';
+
+
 export default class LoginController extends React.Component {
     constructor(props) {
         super();
@@ -43,6 +47,31 @@ export default class LoginController extends React.Component {
         // .then(res => res.json)
         .then(this.props.setOptions)
         .catch(() => this.requestLogin())
+    }
+
+    generateHashKey(source) {
+        return window.crypto.subtle.importKey(
+            "raw",
+            new TextEncoder().encode(source),
+            {"name": "PBKDF2"},
+            false,
+            ["deriveKey"]
+        ).then(baseKey => {
+            return window.crypto.subtle.deriveKey(
+                    {
+                        "name": "PBKDF2",
+                        "salt": new TextEncoder().encode(salt),
+                        "iterations": 100,
+                        "hash": "SHA-256"
+                    },
+                    baseKey,
+                    {"name": "AES-CBC", "length": 128},
+                    true,
+                    ["encrypt", "decrypt"]
+                );
+        }).then(aesKey => {
+            return window.crypto.subtle.exportKey("jwk", aesKey);
+        });
     }
 
     requestLogin() {
@@ -71,18 +100,35 @@ export default class LoginController extends React.Component {
     }
 
     tryLogin() {
+        const   user = dom('#user').value,
+                pass = dom('#pass').value;
+
         this.loadingScreen('Überprüfung der Login-Daten.');
 
-        new Promise((res, rej) => setTimeout(res, 1000))
-        // fetch('api/login', {})
-        .then(() => {
+        this.generateHashKey(pass)
+        .then((hash) => {
+            return fetch('api/authentication', {
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    user,
+                    hash
+                })
+            })
+        })
+        .then(res => Promise[(res.status > 400) ? 'reject' : 'resolve'](res))
+        .then(res => res.json())
+        .then((data) => {
             this.props.setOptions({
                 user: {
-                    name: 'Fochlac',
-                    id: '001',
-                    rank: 'Admin'
+                    name: data.user.name,
+                    id: data.user.id,
+                    role: data.user.role
                 },
-                plans: planOptions,
+                plans: data.plans,
                 login: true
             });
         })
