@@ -1,7 +1,6 @@
 const	user 		= require('express').Router()
-	,	key 		= require('./key')
-	,	userDB 		= require(process.env.EVENT_HOME + 'modules/db/user')
-	,	error 		= require(process.env.EVENT_HOME + 'modules/error');
+	,	userDB 		= require(process.env.TRAINER_HOME + 'modules/db/user')
+	,	error 		= require(process.env.TRAINER_HOME + 'modules/error');
 
 user.param('username', (req, res, next, value) => {
 	req.username = value;
@@ -15,7 +14,5 @@ user.get('/:username', (req, res) => {
 		})
 		.catch(error.router.internalError(res));
 });
-
-user.use('/:username/key', key);
 
 module.exports = user;

@@ -1,16 +1,14 @@
-const 	routes 		= require('express').Router()
-    /*,   auth 		= require('./modules/auth')()*/
-	,	user 		= require('./user')
-	,	key 		= require('./key')
-	,	github 		= require('./github');
+const 	routes 		    = require('express').Router()
+    /*,   auth 		       = require('./modules/auth')()*/
+	,	registration 	= require('./registration')
+	,	github 		    = require('./github');
 
 routes.use('/github', github);
 
-routes.get('/api', (req, res) => {
+routes.get('/', (req, res) => {
   res.status(200).json({ message: 'Connected!' });
 });
 
-routes.use('/api/user', /*auth.checkToken({type: 'api'}),*/ user);
-routes.use('/api/key', key);
+routes.use('/registration', /*auth.checkToken({type: 'api'}),*/ registration);
 
 module.exports = routes;

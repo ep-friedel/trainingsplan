@@ -47,7 +47,7 @@ logStream.on('error', (err) => {
 module.exports = (level, ...message) => {
     let logMessage = ' - ' + level + ' - ' + message.map((item) => {
         let output;
-        if (typeof(item) !== 'string') {
+        if (typeof item === 'string') {
             output = item;
         } else {
             try {

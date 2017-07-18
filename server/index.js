@@ -6,8 +6,8 @@ const   express = require('express')
     ,   compression = require('compression')
     ,   xssFilter = require('x-xss-protection')
     ,   https = require('https')
-    ,   fs = require('fs')/*
-    ,   routes = require(process.env.TRAINER_HOME + 'routes')*/
+    ,   fs = require('fs')
+    ,   routes = require(process.env.TRAINER_HOME + 'routes')
     ,   server_port = process.env.TRAINER_PORT
     ,   server_ip_address = 'localhost'
     ,   sslServer = https.createServer({
@@ -26,7 +26,7 @@ app.use(xssFilter());
 app.set('x-powered-by', false);
 
 // connect router
-// app.use('/', routes);
+app.use('/', routes);
 
 // if not connected to a route, deliver statis content
 app.use('/', express.static(process.env.TRAINER_CLIENT + ''));

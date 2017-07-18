@@ -58,7 +58,24 @@ export default class LoginController extends React.Component {
             {"name": "PBKDF2"},
             false,
             ["deriveKey"]
-        );
+        ).then(baseKey => {
+            return window.crypto.subtle.deriveKey(
+                    {
+                        "name": "PBKDF2",
+                        "salt": new TextEncoder().encode(salt),
+                        "iterations": 100,
+                        "hash": "SHA-256"
+                    },
+                    baseKey,
+                    {"name": "AES-CBC", "length": 128},
+                    true,
+                    ["encrypt", "decrypt"]
+                );
+        }).then(aesKey => {
+            return window.crypto.subtle.exportKey("raw", aesKey);
+        }).then(rawKey => {
+            return btoa(new Uint8Array(rawKey).reduce((data, byte) => data + String.fromCharCode(byte), '')).replace('==', '');
+        });
     }
 
     requestLogin() {
@@ -106,7 +123,6 @@ export default class LoginController extends React.Component {
 
         newObj[id] = bool;
 
-        console.log(id, bool);
         this.setState(Object.assign({}, this.state, {
             register: Object.assign({}, this.state.register, newObj)
         }));
@@ -237,11 +253,11 @@ export default class LoginController extends React.Component {
                         <div className="column wrapper">
                             <div className="row margin-top space-between flex-wrap">
                                 <label htmlFor="user">Nutzer:</label>
-                                <input className="width100" type="text" id="user" onKeyPress={(evt) => ((evt.keyCode = '13') ? dom('#pass').focus() : null)}/>
+                                <input className="width100" type="text" id="user" onKeyPress={(evt) => ((evt.keyCode === '13') ? dom('#pass').focus() : null)}/>
                             </div>
                             <div className="row margin-top space-between flex-wrap">
                                 <label htmlFor="pass">Passwort:</label>
-                                <input className="width100" type="password" id="pass" onKeyPress={(evt) => ((evt.keyCode = '13') ? this.tryLogin() : null)}/>
+                                <input className="width100" type="password" id="pass" onKeyPress={(evt) => ((evt.keyCode === '13') ? this.tryLogin() : null)}/>
                             </div>
                             <div className="margin-top">
                                 <a className="pointer underline smallText" onClick={() => this.requestRegister()}>Account erstellen</a>

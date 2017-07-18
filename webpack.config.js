@@ -12,7 +12,6 @@ const path = require('path'),
 
 module.exports = {
     entry: [
-        'webpack-dev-server/client?https://dev.fochlac.com',
         './client/index.js'
     ],
     output: {
