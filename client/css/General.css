@@ -3,6 +3,13 @@
     flex-direction: row;
     justify-content: space-around;
 }
+.row.stretch *{
+    flex-grow: 1;
+}
+.row.alignCenter,
+.column.alignCenter {
+    align-items: center;
+}
 .column {
     display: flex;
     flex-direction: column;
@@ -16,6 +23,18 @@
     color: #f8f1e5;
     border: none;
     border-radius: 0.3vh;
+}
+.validityIconInside {
+    max-width: 0px;
+    position: relative;
+    right: 3.5vh;
+}
+.validColor {
+    color: #A1be95;
+}
+.invalidColor {
+    color: #FFA49F;
+
 }
 .hidden {
     display: none;
@@ -35,8 +54,20 @@
 .margin-bottom {
     margin-bottom: 1.5vh;
 }
+.underline {
+    text-decoration: underline;
+}
+.smallText {
+    font-size: 2vh;
+}
+.largeText {
+    font-size: 3.5vh;
+}
 .width90 {
     width: 90%;
+}
+.width100 {
+    width: 100%;
 }
 .flex-table td {
     display: flex;

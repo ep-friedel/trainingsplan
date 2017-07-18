@@ -45,8 +45,9 @@ export default class Dialog extends React.Component {
                 React.createElement(
                     'div',
                     {className: 'dialogBody'},
-                    this.props.opts.text,
-                    (this.props.opts.content ? this.props.opts.content : null)
+                    (this.props.opts.text ? this.props.opts.text : null),
+                    (this.props.opts.content ? this.props.opts.content : null),
+                    (this.props.children ? this.props.children : null)
                 ),
                 React.createElement(
                     'div',
