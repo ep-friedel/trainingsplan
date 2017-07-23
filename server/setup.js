@@ -6,8 +6,8 @@ let myDb;
 
 function initDb() {
     let db = mysql.createConnection({
-          host     : process.env.EVENT_KEYSTORE_DB_HOST,
-          port     : process.env.EVENT_KEYSTORE_DB_PORT,
+          host     : process.env.TRAINER_DB_HOST,
+          port     : process.env.TRAINER_DB_PORT,
           user     : process.env.ADMIN_DB_USERNAME,
           password : process.env.ADMIN_DB_PASSWORD
         });
@@ -34,11 +34,12 @@ function initDb() {
 myDb = initDb();
 
 let setup = [
-    `CREATE USER IF NOT EXISTS '${process.env.EVENT_KEYSTORE_DB_USERNAME}'@'${process.env.EVENT_KEYSTORE_DB_HOST}' IDENTIFIED BY '${process.env.EVENT_KEYSTORE_DB_PASSWORD}';`,
-    `CREATE DATABASE IF NOT EXISTS ${process.env.EVENT_KEYSTORE_DB_NAME};`,
-    `GRANT ALL PRIVILEGES ON ${process.env.EVENT_KEYSTORE_DB_NAME}.* TO '${process.env.EVENT_KEYSTORE_DB_USERNAME}'@'${process.env.EVENT_KEYSTORE_DB_HOST}';`,
-    `USE ${process.env.EVENT_KEYSTORE_DB_NAME};`,
-    `CREATE TABLE IF NOT EXISTS \`STORE\` ( \`KEY\` varchar(150) NOT NULL, \`USER\` varchar(150) NOT NULL, \`PKEY\` TEXT NOT NULL, UNIQUE KEY \`USER\` (\`USER\`) );`
+    `CREATE USER IF NOT EXISTS '${process.env.TRAINER_DB_USERNAME}'@'${process.env.TRAINER_DB_HOST}' IDENTIFIED BY '${process.env.TRAINER_DB_PASSWORD}';`,
+    `CREATE DATABASE IF NOT EXISTS ${process.env.TRAINER_DB_NAME};`,
+    `GRANT ALL PRIVILEGES ON ${process.env.TRAINER_DB_NAME}.* TO '${process.env.TRAINER_DB_USERNAME}'@'${process.env.TRAINER_DB_HOST}';`,
+    `USE ${process.env.TRAINER_DB_NAME};`,
+    `CREATE TABLE IF NOT EXISTS \`userlist\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`hash\` varchar(150) NOT NULL, \`salt\` varchar(150) NOT NULL, \`role\` varchar(150) NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`name\` (\`name\`) );`,
+    `CREATE TABLE IF NOT EXISTS \`exercises\` ( \`id\` varchar(150) NOT NULL, \`name\` varchar(150) NOT NULL, \`imageUrl\` TEXT NOT NULL, \`machine\` TEXT NOT NULL, UNIQUE KEY \`name\` (\`name\`) );`,
 ];
 
 console.log('Starting Setup.');

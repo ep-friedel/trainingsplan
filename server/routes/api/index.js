@@ -1,6 +1,8 @@
 const 	routes 		    = require('express').Router()
-    /*,   auth 		       = require('./modules/auth')()*/
+    ,   jwt 		    = require(process.env.TRAINER_HOME + '/modules/auth/jwt')
 	,	registration 	= require('./registration')
+	,	authentication 	= require('./authentication')
+	,	user 			= require('./user')
 	,	github 		    = require('./github');
 
 routes.use('/github', github);
@@ -9,6 +11,8 @@ routes.get('/', (req, res) => {
   res.status(200).json({ message: 'Connected!' });
 });
 
-routes.use('/registration', /*auth.checkToken({type: 'api'}),*/ registration);
+routes.use('/authentication', authentication);
+routes.use('/registration', registration);
+routes.use('/user', jwt.checkToken, user);
 
 module.exports = routes;

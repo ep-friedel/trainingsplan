@@ -43,12 +43,27 @@ export default class LoginController extends React.Component {
 
     componentDidMount() {
         this.loadingScreen('Überprüfung der gespeicherten Login-Daten.');
-
-        //fetch('/api/userData')
-        new Promise((res, rej) => setTimeout(rej, 1000))
-        // .then(res => res.json)
-        .then(this.props.setOptions)
-        .catch(() => this.requestLogin())
+        fetch('/api/user/self', {
+            mode: 'same-origin',
+            credentials: 'include'
+        })
+        .then(res => Promise[(res.status >= 400) ? 'reject' : 'resolve'](res))
+        .then(res => res.json())
+        .then((data) => {
+            this.props.setOptions({
+                user: {
+                    name: data.name,
+                    id: data.id,
+                    role: data.role
+                },
+                plans: [],
+                login: true
+            })
+        })
+        .catch((err) => {
+            console.log(err);
+            this.requestLogin();
+        });
     }
 
     generateHash(source) {
@@ -134,23 +149,15 @@ export default class LoginController extends React.Component {
 
         this.loadingScreen('Überprüfung der Login-Daten.');
 
-        this.props.setOptions({
-            user: {
-                name: 'data.user.name',
-                id: 'data.user.id',
-                role: 'data.user.role'
-            },
-            plans: planOptions,
-            login: true
-        });
 
-/*        this.generateHash(pass)
+        this.generateHash(pass)
         .then((hash) => {
             return fetch('api/authentication', {
                 headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json'
                 },
+                credentials: 'include',
                 method: "POST",
                 body: JSON.stringify({
                     user,
@@ -158,7 +165,7 @@ export default class LoginController extends React.Component {
                 })
             });
         })
-        .then(res => Promise[(res.status > 400) ? 'reject' : 'resolve'](res))
+        .then(res => Promise[(res.status >= 400) ? 'reject' : 'resolve'](res))
         .then(res => res.json())
         .then((data) => {
             this.props.setOptions({
@@ -171,7 +178,7 @@ export default class LoginController extends React.Component {
                 login: true
             });
         })
-        .catch(() => this.requestLogin());*/
+        .catch(() => this.requestLogin());
     }
 
     tryRegister() {
@@ -189,13 +196,14 @@ export default class LoginController extends React.Component {
                       'Content-Type': 'application/json'
                     },
                     method: "POST",
+                    credentials: 'include',
                     body: JSON.stringify({
                         user,
                         hash
                     })
                 });
             })
-            .then(res => Promise[(res.status > 400) ? 'reject' : 'resolve'](res))
+            .then(res => Promise[(res.status >= 400) ? 'reject' : 'resolve'](res))
             .then(res => res.json())
             .then((data) => {
                 this.props.setOptions({
@@ -212,7 +220,6 @@ export default class LoginController extends React.Component {
         }
     }
 
-
     render() {
         switch(this.state.dialogType) {
             case 'register':
@@ -222,21 +229,21 @@ export default class LoginController extends React.Component {
                             <div className="row margin-top space-between flex-wrap">
                                 <label htmlFor="user">Nutzer:</label>
                                 <div className="width100 row stretch alignCenter" >
-                                    <input type="text" id="user" onKeyPress={(evt) => ((evt.keyCode = '13' && this.state.register.userValid) ? dom('#pass').focus() : null)} onChange={(evt) => this.setValidity('user', (evt.currentTarget.value.length > 5))} />
+                                    <input type="text" id="user" onKeyPress={(evt) => ((evt.keyCode = '13' && this.state.register.userValid) ? dom('#pass').focus() : null)} onChange={(evt) => this.setValidity('user', (/^[A-Za-z0-9\s]{5,50}$/.test(evt.currentTarget.value)))} />
                                     <span className={((this.state.register.user === true) ? 'fa-check validColor' : ((this.state.register.user === false) ? 'fa-times invalidColor' : '1')) + ' fa validityIconInside'}></span>
                                 </div>
                             </div>
                             <div className="row margin-top space-between flex-wrap">
                                 <label htmlFor="pass">Passwort:</label>
                                 <div className="width100 row stretch alignCenter" >
-                                    <input type="password" id="pass" onKeyPress={(evt) => ((evt.keyCode = '13' && this.state.register.passValid) ? dom('#pass2').focus() : null)}  onChange={(evt) => this.setValidity('pass', (evt.currentTarget.value.length > 6))} />
+                                    <input type="password" id="pass" onKeyPress={(evt) => ((evt.keyCode = '13' && this.state.register.passValid) ? dom('#pass2').focus() : null)}  onChange={(evt) => this.setValidity('pass', (/^[A-Za-z0-9\s.,-_#'+*!"§$&\/()="]{8,50}$/.test(evt.currentTarget.value)))} />
                                     <span className={((this.state.register.pass === true) ? 'fa-check validColor' : ((this.state.register.pass === false) ? 'fa-times invalidColor' : '1')) + ' fa validityIconInside'}></span>
                                 </div>
                             </div>
                             <div className="row margin-top space-between flex-wrap">
                                 <label htmlFor="pass2">Passwort wiederholen:</label>
                                 <div className="width100 row stretch alignCenter" >
-                                    <input type="password" id="pass" onKeyPress={(evt) => ((evt.keyCode = '13' && this.state.register.pass2Valid) ? this.tryRegisterr() : null)}  onChange={(evt) => this.setValidity('pass2', (evt.currentTarget.value.length && evt.currentTarget.value === dom('#pass').value))} />
+                                    <input type="password" id="pass" onKeyPress={(evt) => ((evt.keyCode = '13' && this.state.register.pass2Valid) ? this.tryRegisterr() : null)}  onChange={(evt) => this.setValidity('pass2', (evt.currentTarget.value === dom('#pass').value))} />
                                     <span className={((this.state.register.pass2 === true) ? 'fa-check validColor' : ((this.state.register.pass2 === false) ? 'fa-times invalidColor' : '1')) + ' fa validityIconInside'}></span>
                                 </div>
                             </div>
@@ -277,6 +284,5 @@ export default class LoginController extends React.Component {
             default:
                 return null;
         }
-
     }
 }

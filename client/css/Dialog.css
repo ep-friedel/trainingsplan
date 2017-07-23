@@ -5,7 +5,7 @@
     left: 0;
     right: 0;
     background-color: rgba(0,0,0,0.3);
-    padding: 10%;
+    padding: 10vh;
     z-index: 100;
 }
 
@@ -13,7 +13,7 @@
     background: #FFF9ED;
     max-width: 55vh;
     min-height: 150px;
-    margin: 100px auto 0;
+    margin: 10vh auto 0;
     padding: 5px;
     display: flex;
     flex-direction: column;

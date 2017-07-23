@@ -14,12 +14,12 @@ export default class Topbar extends React.Component {
 
         return React.createElement(
             'div',
-            {className: 'topbar row'},
+            {className: 'topbar row'}/*,
             React.createElement(
                 'button',
                 {className: 'topbarButton pointer'},
                 'Zurück'
-            )/*,
+            ),
             React.createElement(
                 profile,
                 {className: ''}

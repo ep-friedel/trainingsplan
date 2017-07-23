@@ -4,7 +4,27 @@ const	log		= require(process.env.TRAINER_HOME + 'modules/log');
 module.exports = {
 	default: log,
 
+	promise: (level, message) => {
+		return (err) => {
+			log(level, message, err);
+		}
+	},
+
+	db: {
+		codeError: () => {
+			log(1, arguments);
+			return Promise.reject();
+		}
+	},
+
 	router: {
+		authError: (res) => {
+				log(2, 'Invalid Auth Hash: ', err);
+				log(10, 'Invalid Auth Hash: ', res);
+
+				res.status(401).send({success: false, error: 'Authentication_Error'})
+		},
+
 		internalError: (res) => {
 			return (err) => {
 				log(2, 'Internal Error: ', err);
@@ -14,15 +34,15 @@ module.exports = {
 			}
 		},
 
-		validate: (options) => {
+		validate: (type, options) => {
 			return (req, res, next) => {
 				let param,
 					valid = true,
-					payload = {};
+					payload = req[type];
 
 				for (param in options) {
-					log(6, `Validating ${param}: '${req.body[param]}' against RegExp ${options[param]}, result ${options[param].test(req.body[param])}`);
-					if (valid && !options[param].test(req.body[param])) {
+					log(6, `Validating ${param}: '${payload[param]}' against RegExp ${options[param]}, result ${options[param].test(payload[param])}`);
+					if (valid && !options[param].test(payload[param])) {
 						valid = false;
 					}
 				}
@@ -30,7 +50,7 @@ module.exports = {
 				if (valid) {
 					next();
 				} else {
-					log(4, 'Invalid Request.', req.body);
+					log(4, 'Invalid Request.', payload);
 					res.status(400).send();
 				}
 			}

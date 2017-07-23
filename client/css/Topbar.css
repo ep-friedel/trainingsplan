@@ -1,6 +1,6 @@
 .topbar {
     height: 5vh;
-    justify-content: space-between;
+    justify-content: flex-end;
     background: #426E86;
     padding: 1vh 2.5vh;
     border-bottom: solid 0.2vh #aaa;

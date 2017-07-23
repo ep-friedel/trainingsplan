@@ -11,7 +11,8 @@ const path = require('path'),
       ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-    entry: [
+    entry: [/*
+        'webpack-dev-server/client?https://dev.fochlac.com',*/
         './client/index.js'
     ],
     output: {
