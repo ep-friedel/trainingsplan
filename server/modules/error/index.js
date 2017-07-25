@@ -18,8 +18,8 @@ module.exports = {
 	},
 
 	router: {
-		authError: (res) => {
-				log(2, 'Invalid Auth Hash: ', err);
+		authError: (res, ip) => {
+				log(2, 'Invalid Auth Hash from IP: ' + ip);
 				log(10, 'Invalid Auth Hash: ', res);
 
 				res.status(401).send({success: false, error: 'Authentication_Error'})

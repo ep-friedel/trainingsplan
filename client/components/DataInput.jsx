@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class dataInput extends React.Component {
+export default class DataInput extends React.Component {
     constructor(props) {
         super();
     }

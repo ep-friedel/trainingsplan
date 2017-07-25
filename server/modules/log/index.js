@@ -1,4 +1,5 @@
-const   fs = require('fs');
+const   fs = require('fs'),
+        logLevel = 6;
 
 /**
 *   Error Levels:
@@ -27,13 +28,16 @@ let logStream,
             }, 1000);
 
             date = new Date();
-            date = date.getFullYear() + '_' + date.getMonth() + '_' + date.getDate();
+            date = {
+                day: date.getFullYear() + '_' + date.getMonth() + '_' + date.getDate(),
+                time: date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+            }
         }
         return date;
     },
-    currentDate = getDate();
+    currentDate = getDate().day;
 
-logStream = fs.createWriteStream(process.env.EVENT_HOME + 'log/output' + getDate() + '.txt', {
+logStream = fs.createWriteStream(process.env.TRAINER_HOME + 'log/output' + getDate().day + '.txt', {
     flags: 'a',
     defaultEncoding: 'utf8',
     autoClose: true
@@ -45,7 +49,11 @@ logStream.on('error', (err) => {
 
 
 module.exports = (level, ...message) => {
-    let logMessage = ' - ' + level + ' - ' + message.map((item) => {
+    if (level > logLevel) {
+        return;
+    }
+    let now = getDate(),
+        logMessage = now.day + ' - ' + now.time + ' - ' + level + ' - ' + message.map((item) => {
         let output;
         if (typeof item === 'string') {
             output = item;
@@ -63,10 +71,10 @@ module.exports = (level, ...message) => {
 
     console.log(logMessage);
 
-    if (currentDate !== getDate()) {
-        currentDate = getDate();
+    if (currentDate !== getDate().day) {
+        currentDate = getDate().day;
         logStream.end();
-        logStream = fs.createWriteStream(process.env.EVENT_HOME + 'log/output' + getDate() + '.txt', {
+        logStream = fs.createWriteStream(process.env.TRAINER_HOME + 'log/output' + getDate().day + '.txt', {
             flags: 'a',
             defaultEncoding: 'utf8',
             autoClose: true

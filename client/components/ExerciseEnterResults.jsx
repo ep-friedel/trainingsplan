@@ -1,5 +1,5 @@
 import React from 'react';
-import dataInput from './DataInput.jsx';
+import DataInput from './DataInput.jsx';
 
 export default class enterResults extends React.Component {
     constructor(props) {
@@ -25,7 +25,7 @@ export default class enterResults extends React.Component {
                 'div',
                 {className: 'row'},
                 React.createElement(
-                    dataInput,
+                    DataInput,
                     {
                         defaultValue: this.props.currentReps,
                         callback: (newNumber) => this.props.changedReps(newNumber),
@@ -35,7 +35,7 @@ export default class enterResults extends React.Component {
                     }
                 ),
                 React.createElement(
-                    dataInput,
+                    DataInput,
                     {
                         defaultValue: this.props.currentWeight,
                         callback: (newNumber) => this.props.changedWeight(newNumber),

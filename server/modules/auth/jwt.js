@@ -21,10 +21,10 @@ function getUserList() {
 
 function createJWT(userObject) {
     return new Promise( (resolve, reject) => {
-        log(6, 'Creating JWT for User: ', userObject.name);
+        log(6, 'createJWT: Creating JWT for User: ', userObject.name);
         jwt.sign({id: userObject.id, role: userObject.role}, secretKey, jwtOptions, (err, token) => {
             if (err) {
-                log(4, 'Error creating JWT.' , err);
+                log(4, 'createJWT: Error creating JWT.' , err);
                 reject(err);
             } else {
                 resolve(token);
@@ -36,7 +36,7 @@ function createJWT(userObject) {
 function jwtVerify(request) {
     return new Promise( (resolve, reject) => {
         if (request.headers.jwt === undefined && request.headers.cookie.indexOf('jwt=') === -1) {
-            log(4, 'Call without JWT');
+            log(4, 'jwtVerify: Call without JWT');
             reject('no token provided');
             return;
         }
@@ -50,12 +50,13 @@ function jwtVerify(request) {
         }
         token = request.headers.jwt || cookie.jwt;
 
-        log(6, 'decoding JWT-Token');
+        log(6, 'jwtVerify: decoding JWT-Token');
         jwt.verify(token, secretKey, (err, token) => {
             if (err) {
-                log(4, 'No valid Token provided.', err);
+                log(4, 'jwtVerify: No valid Token provided.', err);
                 reject(err);
             } else {
+                log(6, 'jwtVerify: JWT-Token is valid');
                 resolve(token);
             }
         });
@@ -63,15 +64,17 @@ function jwtVerify(request) {
 }
 
 function jwtGetUser(token) {
+    log(6, 'jwtGetUser: Checking userlist for ' + token.id);
     return new Promise( (resolve, reject) => {
         let userObject = userList.filter((dbUser) => {
                 return dbUser.id === token.id;
             });
 
         if (userObject.length > 0) {
-            log(6, 'got user list');
+            log(6, 'jwtGetUser: got user');
             resolve(userObject[0]);
         } else {
+            log(6, 'jwtGetUser: user not found. Token: ' + JSON.stringify(token) + '. List: ' + JSON.stringify(userList));
             reject();
         }
     });

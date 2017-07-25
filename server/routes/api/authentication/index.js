@@ -30,7 +30,8 @@ auth.post('/', error.router.validate('body', {
 	})
 	.catch(err => {
 		if (err && err.type === 'InvalidHash') {
-			error.router.authError(res);
+            console.log(req.originalIP);
+			error.router.authError(res, req.connection.remoteAddress);
 		} else {
 			error.router.internalError(res)(err);
 		}

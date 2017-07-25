@@ -2,6 +2,7 @@ import React from 'react';
 import PlanList from './PlanList.jsx';
 import Topbar from './Topbar.jsx';
 import LoginController from './LoginController.jsx';
+import Dashboard from './Dashboard.jsx';
 import '../css/General.css';
 
 export default class App extends React.Component {
@@ -27,8 +28,17 @@ export default class App extends React.Component {
     render() {
         return (
             <div className="appRoot">
-                <Topbar opts={{hideTopbar: false}} setPlan={(id) => this.setPlan(id)}/>
-                {this.state.login ? <PlanList userId={this.state.user.id} show={true} currentPlan={this.state.currentPlan} plans={this.state.plans} setPlan={(id) => this.setPlan(id)}/> : null}
+                <Topbar opts={{hideTopbar: false}} setPlan={(id) => this.setPlan(id)}  setOptions={(opts) => this.setOptions(opts)}/>
+                {this.state.login ?
+                    <Dashboard options={
+                        {
+                            user: this.state.user,
+                            currentPlan: this.state.currentPlan,
+                            plans: this.state.currentPlan
+                        }
+                    } setPlan={(id) => this.setPlan(id)}/>
+                    : null
+                }
                 {!this.state.login ? <LoginController setOptions={(opts) => this.setOptions(opts)} /> : null}
             </div>
         );

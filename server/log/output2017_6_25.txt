@@ -1,0 +1,63 @@
+2017_6_25 - 0:0:43 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:0:43 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:0:43 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:0:43 - 6 - jwtGetUser: got user
+2017_6_25 - 0:0:43 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 0:1:40 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:1:40 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:1:40 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:1:40 - 6 - jwtGetUser: got user
+2017_6_25 - 0:1:40 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 0:3:14 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:3:14 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:3:14 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:3:14 - 6 - jwtGetUser: got user
+2017_6_25 - 0:3:14 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 0:29:42 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:29:42 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:29:42 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:29:42 - 6 - jwtGetUser: got user
+2017_6_25 - 0:29:42 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 0:46:52 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:46:52 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:46:52 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:46:52 - 6 - jwtGetUser: got user
+2017_6_25 - 0:46:52 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 0:46:58 - 6 - Validating user: 'test1234' against RegExp /^[A-Za-z0-9\s]{5,50}$/, result true
+2017_6_25 - 0:46:58 - 6 - Validating hash: 'wl0L/tr3XaaqnLIUkQq8dA' against RegExp /^[A-Za-z0-9\s+\/]*$/, result true
+2017_6_25 - 0:46:58 - 6 - createJWT: Creating JWT for User:  test1234
+2017_6_25 - 0:51:57 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:51:57 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:51:57 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:51:57 - 6 - jwtGetUser: got user
+2017_6_25 - 0:51:57 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 0:56:1 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:56:1 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:56:1 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:56:1 - 6 - jwtGetUser: got user
+2017_6_25 - 0:56:1 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 0:58:58 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:58:58 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:58:58 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:58:58 - 6 - jwtGetUser: got user
+2017_6_25 - 0:58:58 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 0:59:7 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 0:59:7 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 0:59:7 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 0:59:7 - 6 - jwtGetUser: got user
+2017_6_25 - 0:59:7 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 1:0:33 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 1:0:33 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 1:0:33 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 1:0:33 - 6 - jwtGetUser: got user
+2017_6_25 - 1:0:33 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 1:0:48 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 1:0:48 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 1:0:48 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 1:0:48 - 6 - jwtGetUser: got user
+2017_6_25 - 1:0:48 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true
+2017_6_25 - 1:0:54 - 6 - jwtVerify: decoding JWT-Token
+2017_6_25 - 1:0:54 - 6 - jwtVerify: JWT-Token is valid
+2017_6_25 - 1:0:54 - 6 - jwtGetUser: Checking userlist for 3
+2017_6_25 - 1:0:54 - 6 - jwtGetUser: got user
+2017_6_25 - 1:0:54 - 6 - Validating user: 'self' against RegExp /^[A-Za-z0-9\s]{4,50}$/, result true

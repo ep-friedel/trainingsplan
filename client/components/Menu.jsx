@@ -100,6 +100,12 @@ export default class menu extends React.Component {
                 this.renderMenuEntry({
                     iconClass: 'fa-sign-out fa-lg',
                     action: () => {
+                        this.props.setOptions({
+                            user: {},
+                            plans: [],
+                            login: false,
+                            currentPlan: -1
+                        });
                         this.toggleMenu();
                     },
                     text: 'Abmelden'

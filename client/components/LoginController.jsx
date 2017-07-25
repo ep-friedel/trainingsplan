@@ -61,7 +61,6 @@ export default class LoginController extends React.Component {
             })
         })
         .catch((err) => {
-            console.log(err);
             this.requestLogin();
         });
     }
@@ -178,7 +177,10 @@ export default class LoginController extends React.Component {
                 login: true
             });
         })
-        .catch(() => this.requestLogin());
+        .catch((err) => {
+            console.log(err);
+            this.requestLogin()
+        });
     }
 
     tryRegister() {
