@@ -13,7 +13,8 @@ export default class App extends React.Component {
             user: undefined,
             plans: [],
             login: false,
-            currentPlan: -1
+            currentPlan: -1,
+            activeDashboardPage: ''
         }
     }
 
@@ -25,10 +26,16 @@ export default class App extends React.Component {
         this.setState(options);
     }
 
+    openDashboardPage(page) {
+        this.setState({
+            activeDashboardPage: page
+        });
+    }
+
     render() {
         return (
             <div className="appRoot">
-                <Topbar opts={{hideTopbar: false}} setPlan={(id) => this.setPlan(id)}  setOptions={(opts) => this.setOptions(opts)}/>
+                <Topbar opts={{hideTopbar: false}} setPlan={(id) => this.setPlan(id)} openHome={() => this.openDashboardPage('')} setOptions={(opts) => this.setOptions(opts)}/>
                 {this.state.login ?
                     <Dashboard options={
                         {
@@ -36,7 +43,7 @@ export default class App extends React.Component {
                             currentPlan: this.state.currentPlan,
                             plans: this.state.currentPlan
                         }
-                    } setPlan={(id) => this.setPlan(id)}/>
+                    } setPlan={(id) => this.setPlan(id)} activePage={this.state.activeDashboardPage} openPage={(arg) => this.openDashboardPage(arg)}/>
                     : null
                 }
                 {!this.state.login ? <LoginController setOptions={(opts) => this.setOptions(opts)} /> : null}

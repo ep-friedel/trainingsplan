@@ -11,7 +11,7 @@ export default class DataInput extends React.Component {
             null,
             React.createElement(
                 'h4',
-                null,
+                {className:"margin-top"},
                 this.props.name
             ),
             React.createElement(

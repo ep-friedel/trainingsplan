@@ -8,22 +8,25 @@
     left:0;
     right:0;
     top:0;
-    z-index: 1;
+    z-index: 100;
 }
 
 .topbarButton {
     background: #0F3B53;
     color: #f8f1e5;
     border: none;
-    border-radius: 0.4vh;
-    font-size: 3vh;
-    padding: 0.9vh 2.5vh 0.5vh;
+    border-radius: .4vh;
+    padding: 1vh 1.5vh .5vh;
+    width: 5.1vh;
     height: 5.1vh;
-    font-family: Raleway;
+    margin-right: 2vh;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
 }
 
 .menu {
-    width: 4.1vh;
+    width: 4.2vh;
     height: 4.1vh;
     overflow: hidden;
     background: #0F3B53;

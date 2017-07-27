@@ -14,6 +14,9 @@
     display: flex;
     flex-direction: column;
 }
+.padding {
+    padding: 1.5vh;
+}
 .fullWidthButton {
     width: 100%;
     font-size: 2.5vh;
@@ -66,8 +69,14 @@
 .width90 {
     width: 90%;
 }
+.width45 {
+    width: 45%;
+}
 .width100 {
     width: 100%;
+}
+.maxWidth45 {
+    max-width: 45%;
 }
 .flex-table td {
     display: flex;
@@ -94,6 +103,18 @@
 }
 .space-between {
     justify-content: space-between;
+}
+.labelButton {
+    padding: 1vh 2vh;
+    background: #426e86;
+    color: #f8f1e5;
+    border-radius: 0.4vh;
+    cursor: pointer;
+}
+.fa.labelButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 table {
     width: 100%;
@@ -144,6 +165,12 @@ body {
     font-family: Raleway;
     overflow: hidden;
 }
+select {
+    font-size: 2.5vh;
+}
+option {
+    font-size: 2.5vh;
+}
 #root {
     text-align: center;
     height: calc(100% - 7.2vh);
@@ -157,4 +184,12 @@ body {
 .appRoot{
     height: 100%;
     overflow-y: auto;
+}
+
+
+.fa.fa {
+    font-family: Raleway;
+}
+.fa.fa:before {
+    font-family: FontAwesome;
 }

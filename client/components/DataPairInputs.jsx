@@ -5,23 +5,29 @@ export default class DataInput extends React.Component {
         super();
 
         this.state = {
-            array: [{key: '', val: ''}],
+            array: ( props.array ? [Object.assign({}, props.array[0])] : [{key: '', val: ''}]),
             virgin: true
         }
     }
 
     addRow() {
         this.setState({
-            array: this.state.array.concat([{key: '', val: ''}])
+            array: this.state.array.concat((this.props.array ? Object.assign({}, this.props.array[0]) : {key: '', val: ''}))
         });
     }
 
-    updateValue(evt) {
-        let newArr = this.state.array.slice(),
-            index = evt.target.dataset.index,
-            key = evt.target.dataset.type;
+    delay(evt) {
+        let e = evt.target;
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => this.updateValue(e), 200);
+    }
 
-        newArr[index][key] = evt.target.value;
+    updateValue(target) {
+        let newArr = this.state.array.slice(),
+            index = target.dataset.index,
+            key = target.dataset.type;
+
+        newArr[index][key] = target.value;
 
         this.setState({
             array: newArr,
@@ -36,28 +42,50 @@ export default class DataInput extends React.Component {
         }, {}));
     }
 
+    renderInput(type, defaultValue, index, dataType, options) {
+        if (type === 'text' || type === 'number') {
+            return <input type="{type}" className="maxWidth45 width45" data-index={index} data-type={dataType} defaultValue={defaultValue} onChange={evt => this.delay(evt)}/>;
+        } else if (type === 'select') {
+            return (
+                <select className="maxWidth45 width45" data-index={index} data-type={dataType} onChange={evt => this.updateValue(evt.target)}>
+                    <option value="">Bitte auswählen</option>
+                    {options.map(option => <option value={option.value} selected={(option.value === defaultValue) ? 'selected' : ''}>{option.name}</option>)}
+                </select>
+            );
+        }
+    }
+
     render() {
         let pairs;
 
         pairs = this.state.array.map( (obj, index) => {
             return (
-                <div className="row">
-                    <input type="text" data-index={index} data-type="key" defaultValue={obj.key} onChange={evt => this.updateValue(evt)}/>
-                    <input type="text" data-index={index} data-type="val" defaultValue={obj.val} onChange={evt => this.updateValue(evt)}/>
+                <div className="row margin-top">
+                    {this.renderInput(this.props.col1type, obj.key, index, 'key', this.props.col1options)}
+                    {this.renderInput(this.props.col2type, obj.val, index, 'val', this.props.col2options)}
                 </div>
             );
         });
 
         return (
-            <div className={(this.props.className ? this.props.className : '') + ' column'} >
-                <h3>{(this.props.title ? this.props.title : '')}</h3>
-                {pairs}
-                <div className="column">
-                    <div className="row">
-                        <h3>Neue Zeile hinzufügen:</h3>
-                        <button className="fa fa-plus-circle" onClick={() => this.addRow()}></button>
-                    </div>
+            <div className={(this.props.className ? this.props.className : '') + ' column margin-bottom'} >
+                {(this.props.title ? <h3>this.props.title</h3> : null)}
+                <div className="row margin-top">
+                    <h3>{this.props.titleCol1}</h3>
+                    <h3>{this.props.titleCol2}</h3>
                 </div>
+                {pairs}
+                {
+                    (this.props.limit > this.state.array.length) ?
+                        (
+                            <div className="column">
+                                <div className="row margin-top">
+                                    <h3>Neue Zeile hinzufügen:</h3>
+                                    <label className="fa fa-plus-circle labelButton fa-lg" onClick={() => this.addRow()}></label>
+                                </div>
+                            </div>
+                        ) : null
+                }
             </div>
         )
     }

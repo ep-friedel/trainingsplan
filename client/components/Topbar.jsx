@@ -14,16 +14,15 @@ export default class Topbar extends React.Component {
 
         return React.createElement(
             'div',
-            {className: 'topbar row'}/*,
+            {className: 'topbar row'},
             React.createElement(
                 'button',
-                {className: 'topbarButton pointer'},
-                'Zurück'
+                {className: 'topbarButton pointer fa fa-home fa-lg', onClick: () => this.props.openHome()}
             ),
-            React.createElement(
+            /*React.createElement(
                 profile,
                 {className: ''}
-            )*/,
+            )*/
             React.createElement(
                 menu,
                 {
