@@ -18,7 +18,7 @@ user.get('/:user', error.router.validate('params', {
 	userRequest.then((userObject) => {
 		res.status(200).send(userObject);
 	})
-	.catch(error.router.internalError);
+	.catch(error.router.internalError(res));
 });
 
 module.exports = user;

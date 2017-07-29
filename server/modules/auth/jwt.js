@@ -63,7 +63,7 @@ function jwtVerify(request) {
     });
 }
 
-function jwtGetUser(token) {
+function jwtGetUser(token, retest) {
     log(6, 'jwtGetUser: Checking userlist for ' + token.id);
     return new Promise( (resolve, reject) => {
         let userObject = userList.filter((dbUser) => {
@@ -75,7 +75,14 @@ function jwtGetUser(token) {
             resolve(userObject[0]);
         } else {
             log(6, 'jwtGetUser: user not found. Token: ' + JSON.stringify(token) + '. List: ' + JSON.stringify(userList));
-            reject();
+            if (retest) {
+                return reject();
+            }
+
+            return getUserList()
+                .then(() => {
+                    return jwtGetUser(token, true);
+                });
         }
     });
 }

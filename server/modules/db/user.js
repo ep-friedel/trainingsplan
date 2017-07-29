@@ -1,47 +1,21 @@
-const   mysql           = require('mysql')
+const   getConnection   = require(process.env.TRAINER_HOME + 'modules/db')
+    ,   mysql           = require('mysql')
     ,   log             = require(process.env.TRAINER_HOME + 'modules/log');
-
-let myDb;
-
-function initDb() {
-    let db = mysql.createConnection({
-          host     : process.env.TRAINER_DB_HOST,
-          port     : process.env.TRAINER_DB_PORT,
-          user     : process.env.TRAINER_DB_USERNAME,
-          password : process.env.TRAINER_DB_PASSWORD,
-          database : process.env.TRAINER_DB_NAME
-        });
-
-    db.on('error', (err) => {
-        if (err){
-            if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-                throw('MySQL-ConnectionError: ' + err);
-            } else {
-                myDb = initDb();
-            }
-        }
-    });
-
-    db.connect((err) => {
-        if (err) {
-            throw('MySQL-ConnectionError: ' + err);
-        }
-    });
-
-    return db;
-};
-
-myDb = initDb();
 
 module.exports = {
     getUserObjectByProperty: (prop, val) => {
-        return new Promise((resolve, reject) => myDb.query(`select * from userlist where ${prop} = ${mysql.escape(val)}`, (err, result) => {
-            if (err) {
-                reject({status: 500, message: 'Unable to find user.'});
-            } else {
-                resolve(result[0]);
-            }
-        }))
+        return getConnection()
+        .then (myDb => {
+            return new Promise((resolve, reject) => myDb.query(`select * from userlist where ${prop} = ${mysql.escape(val)}`, (err, result) => {
+                myDb.release();
+                if (err) {
+                    log(2, 'modules/db/user:getUserObjectByProperty', err);
+                    reject({status: 500, message: 'Unable to find user.'});
+                } else {
+                    resolve(result[0]);
+                }
+            }));
+        });        
     },
 
     createUser: (options) => {
@@ -94,41 +68,46 @@ module.exports = {
             ON DUPLICATE KEY UPDATE \`name\` = \`name\`;`
         ];
 
-        return new Promise((resolve, reject) => myDb.query(`select * from userlist where name = ${mysql.escape(options.name)}`, (err, result) => {
-            if (err) {
-                reject({status: 500, message: 'Failed checking if user exists'});
-            } else {
-                if (result.length) {
-                    reject({status: 400, message: 'User already exists.'})
+        return getConnection()
+        .then (myDb => {
+            return new Promise((resolve, reject) => myDb.query(`select * from userlist where name = ${mysql.escape(options.name)}`, (err, result) => {
+                if (err) {
+                    log(2, 'modules/db/user:createUser.1', err);
+                    reject({status: 500, message: 'Failed checking if user exists'});
                 } else {
-                    resolve();
-                }
-            }
-        }))
-        .then(() => Promise.all(queries.map(query => {
-            return new Promise((resolve,reject) => {
-                myDb.query(query, (err, result) => {
-                    if (err) {
-                        log(2, 'Failed creating a user', err, query);
-                        reject({status: 500, message: 'Error creating user'});
+                    if (result.length) {
+                        reject({status: 400, message: 'User already exists.'})
                     } else {
                         resolve();
                     }
-                });
-            })
-        })))
-        .then(() => {
-            log(6, 'User created, getting Id');
-            return new Promise((resolve, reject) => myDb.query(`select id, name, role from userlist where name = ${mysql.escape(options.name)};`, (err, result) => {
-                if (err) {
-                    log(2, 'Failed getting user id', err, query);
-                    reject({status: 500, message: 'Error getting user id after creation'});
                 }
-                resolve({
-                    user: result[0],
-                    success: true
-                });
-            }));
+            }))
+            .then(() => Promise.all(queries.map(query => {
+                return new Promise((resolve,reject) => {
+                    myDb.query(query, (err, result) => {
+                        if (err) {
+                            log(2, 'modules/db/user:createUser.2', err, query);
+                            reject({status: 500, message: 'Error creating user'});
+                        } else {
+                            resolve();
+                        }
+                    });
+                })
+            })))
+            .then(() => {
+                log(6, 'User created, getting Id');
+                return new Promise((resolve, reject) => myDb.query(`select id, name, role from userlist where name = ${mysql.escape(options.name)};`, (err, result) => {
+                    myDb.release();
+                    if (err) {
+                        log(2, 'modules/db/user:createUser.3', err, query);
+                        reject({status: 500, message: 'Error getting user id after creation'});
+                    }
+                    resolve({
+                        user: result[0],
+                        success: true
+                    });
+                }));
+            })
         })
         .catch(err => {
             if (err && err.status) {
@@ -136,17 +115,22 @@ module.exports = {
                 return err;
             }
 
-            return error.db.codeError('modules/db/user.js:createUser', arguments);
-        })
+            return error.db.codeError('modules/db/user.js:createUser.4', arguments);
+        });
     },
 
     getAllUserSettings: () => {
-        return new Promise((resolve, reject) => myDb.query(`select * from userlist`, (err, result) => {
-            if (err) {
-                reject({status: 500, message: 'Unable to get userlist.'});
-            } else {
-                resolve(result);
-            }
-        }));
+        return getConnection()
+        .then (myDb => {
+            return new Promise((resolve, reject) => myDb.query(`select * from userlist`, (err, result) => {
+                myDb.release();
+                if (err) {
+                    log(2, 'modules/db/user:getAllUserSettings', err);
+                    reject({status: 500, message: 'Unable to get userlist.'});
+                } else {
+                    resolve(result);
+                }
+            }));
+        });        
     }
 }

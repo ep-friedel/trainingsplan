@@ -112,7 +112,6 @@ export default class Exercise extends React.Component {
             return null;
         }
 
-
         switch(this.props.display) {
         case 'hidden':
             return null;

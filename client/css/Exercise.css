@@ -49,6 +49,8 @@
 .exerciseImage {
     max-width: 100%;
     border: solid 0.3vh #0f3b53;
+    padding: 0.5vh;
+    background: white;
     border-radius: 0.3vh;
     box-sizing: border-box;
     max-height: 20vh;

@@ -131,6 +131,12 @@ td > p:nth-child(2) {
 p {
     margin: 2px 0;
 }
+h2 {    
+    font-size: 1.3em;
+    border-bottom: solid 0.2vh;
+    padding-bottom: 0.5vh;
+    margin: 1.5vh 0 0.5vh;
+}
 h3 {
     margin: 10px 0 5px;
 }

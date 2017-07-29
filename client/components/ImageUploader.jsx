@@ -39,7 +39,7 @@ function resize(file, maxDimensions) {
             ctx.drawImage(image, 0, 0, width, height);
 
             canvas.toBlob((blob) => {
-                resolve(blob);
+                resolve(new File([blob], file.name, {type: file.type}));
             }, file.type);
         };
 
@@ -51,7 +51,7 @@ export default class ImageUploader extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            imageUrl: '',
+            imageUrl: props.opts.imageUrl ? props.opts.imageUrl : '',
             fileName: ''
         }
     }

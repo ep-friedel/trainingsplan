@@ -59,7 +59,11 @@ module.exports = (level, ...message) => {
             output = item;
         } else {
             try {
-                output = JSON.stringify(item);
+                if (Object.prototype.toString.call(item) === "[object Error]") {
+                    output = item.stack.replace(/\n\s*/g, ' |-| ')
+                } else {
+                    output = JSON.stringify(item);
+                }
             }
             catch(err) {
                 console.log(item);

@@ -16,8 +16,8 @@ registration.post('/', error.router.validate('body', {
 		console.log(hashObj);
 
 		return userDB.createUser({
-		name: req.body.user, 
-		hash: hashObj.hash, 
+		name: req.body.user,
+		hash: hashObj.hash,
 		salt: hashObj.salt,
 		role: 'user'
 	})})
@@ -36,7 +36,7 @@ registration.post('/', error.router.validate('body', {
 			res.status(result.status).send(result.message);
 		}
 	})
-	.catch(error.router.internalError);
+	.catch(error.router.internalError(res));
 });
 
 module.exports = registration;

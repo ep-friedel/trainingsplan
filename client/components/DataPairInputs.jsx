@@ -5,7 +5,7 @@ export default class DataInput extends React.Component {
         super();
 
         this.state = {
-            array: ( props.array ? [Object.assign({}, props.array[0])] : [{key: '', val: ''}]),
+            array: ( props.array ? props.array.map(obj => Object.assign({}, obj)) : [{key: '', val: ''}]),
             virgin: true
         }
     }
