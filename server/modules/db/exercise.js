@@ -1,6 +1,7 @@
 const   getConnection   = require(process.env.TRAINER_HOME + 'modules/db')
     ,   mysql           = require('mysql')
-    ,   log             = require(process.env.TRAINER_HOME + 'modules/log');
+    ,   log             = require(process.env.TRAINER_HOME + 'modules/log')
+    ,   error           = require(process.env.TRAINER_HOME + 'modules/error');
 
 function reduceToExerciseObjectArray(result) {
     let reducedResult,
@@ -68,21 +69,30 @@ module.exports = {
         });
     },
 
-    createExercise: (options) => {
+    saveExercise: (options) => {
         const queries = {
             exercises: `INSERT INTO exercises (
                             name,
                             imageUrl,
                             note,
                             machine
+                            ${options.id ? ', id' : ''}
                         ) VALUES
                         (
                             ${mysql.escape(options.name)},
                             ${mysql.escape(options.imageUrl)},
                             ${mysql.escape(options.note)},
                             ${mysql.escape(options.machine)}
+                            ${(options.id !== undefined) ? ', ' + mysql.escape(options.id) : ''}
                         )
-                        ON DUPLICATE KEY UPDATE \`name\` = \`name\`;`,
+                        ON DUPLICATE KEY UPDATE
+                        \`name\`=VALUES(\`name\`),
+                        \`imageUrl\`=VALUES(\`imageUrl\`),
+                        \`note\`=VALUES(\`note\`),
+                        \`machine\`=VALUES(\`machine\`);`,
+
+            setupDelete: `DELETE FROM exerciseSetup WHERE exerciseId = ${mysql.escape(options.id)};`,
+
             setup: (id, setting, type) => `INSERT INTO exerciseSetup (
                         exerciseId,
                         setting,
@@ -92,8 +102,7 @@ module.exports = {
                         ${mysql.escape(id)},
                         ${mysql.escape(setting)},
                         ${mysql.escape(type)}
-                    )
-                    ON DUPLICATE KEY UPDATE \`setting\`=VALUES(\`setting\`), \`type\`=VALUES(\`type\`);`,
+                    );`,
             getId: `SELECT id FROM exercises WHERE name = ${mysql.escape(options.name)};`
         };
 
@@ -110,14 +119,25 @@ module.exports = {
                 });
             })
             .then(() => {
-                log(6, 'Exercise created, getting Id');
-                return new Promise((resolve, reject) => myDb.query(queries.getId, (err, result) => {
-                    if (err) {
-                        log(2, 'Failed getting exercise id', err, queries.getId);
-                        reject({status: 500, message: 'Error getting exercise id after creation'});
-                    }
-                    resolve(result[0].id);
-                }));
+                if (options.id !== undefined) {
+                    log(6, 'Exercise created, emptying setup table');
+                    return new Promise((resolve, reject) => myDb.query(queries.setupDelete, (err, result) => {
+                        if (err) {
+                            log(2, 'Failed emptying setup table', err, queries.setupDelete);
+                            reject({status: 500, message: 'Error emptying setup table'});
+                        }
+                        resolve(options.id);
+                    }));
+                } else {
+                    log(6, 'Exercise created, getting Id');
+                    return new Promise((resolve, reject) => myDb.query(queries.getId, (err, result) => {
+                        if (err) {
+                            log(2, 'Failed getting exercise id', err, queries.getId);
+                            reject({status: 500, message: 'Error getting exercise id after creation'});
+                        }
+                        resolve(result[0].id);
+                    }));
+                }
             })
             .then(id => {
                 let setting,
@@ -152,7 +172,7 @@ module.exports = {
 
             return error.db.codeError('modules/db/exercise.js:createExercise', arguments);
         });
-            
+
     },
 
     getAllExercises: () => {

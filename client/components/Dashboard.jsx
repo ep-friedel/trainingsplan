@@ -2,7 +2,7 @@ import React from 'react';
 import PlanList from './PlanList.jsx';
 import ExerciseEditorController from './ExerciseEditorController.jsx';
 import ExerciseListController from './ExerciseListController.jsx';
-// import PlanEditorController from './PlanEditorController.jsx';
+import PlanEditorController from './PlanEditorController.jsx';
 import '../css/Dashboard.css';
 
 export default class Dashboard extends React.Component {
@@ -17,10 +17,9 @@ export default class Dashboard extends React.Component {
                     case 'PlanList':
                         return <PlanList userId={this.props.options.user.id} show={true} currentPlan={this.props.options.currentPlan} plans={this.props.options.plans} setPlan={this.props.setPlan}/>;
                     case 'ExerciseEditor':
-                        return <ExerciseEditorController show={true}></ExerciseEditorController>;
-                    case 'PlanEditor':
                         return <ExerciseListController></ExerciseListController>;
-                        // return <PlanEditorController></PlanEditorController>;
+                    case 'PlanEditor':
+                        return <PlanEditorController></PlanEditorController>;
                     default:
                         return (
                             <ul>

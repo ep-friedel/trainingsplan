@@ -4,6 +4,7 @@ const 	routes 		    = require('express').Router()
 	,	authentication 	= require('./authentication')
     ,   user            = require('./user')
 	,	exercise 		= require('./exercise')
+	,	plan 			= require('./plan')
 	,	github 		    = require('./github');
 
 routes.use('/github', github);
@@ -16,5 +17,6 @@ routes.use('/authentication', authentication);
 routes.use('/registration', registration);
 routes.use('/user', jwt.checkToken, user);
 routes.use('/exercise', jwt.checkToken, exercise);
+routes.use('/plan', jwt.checkToken, plan);
 
 module.exports = routes;

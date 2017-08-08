@@ -62,11 +62,12 @@ export default class ImageUploader extends React.Component {
 
         resize(input.files[0], {width: 1000, height: 1000})
             .then(file => {
+                let objectUrl = URL.createObjectURL(file);
                 this.setState({
-                    imageUrl: URL.createObjectURL(file)
+                    imageUrl: objectUrl
                 });
 
-                this.props.callback(file);
+                this.props.callback(file, objectUrl);
             });
 
     }

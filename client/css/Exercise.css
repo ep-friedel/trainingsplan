@@ -92,3 +92,28 @@
 .newResults td {
     min-height: 3.25vh;
 }
+.exerciseListImage {
+    padding: .2vh;
+    max-width: 100%;
+    border: .3vh solid #0f3b53;
+    background: #fff;
+    border-radius: .3vh;
+    max-height: 100%;
+}
+.fa.exerciseListImage {
+    font-size: 8vh;
+    padding: 0.35vh 1vh;
+}
+.exerciseListRow {
+    height: 8vh;
+    margin: 1vh;
+    padding: 1vh 2.5vh;
+    border: .3vh solid #0f3b53;
+    border-radius: .3vh;
+    flex-shrink: 12;
+    background: #fcf9bc;
+    user-select: none;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}

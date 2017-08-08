@@ -1,18 +1,17 @@
 import React from 'react';
-import ExerciseEditor from './ExerciseEditor.jsx';
+import PlanEditor from './PlanEditor.jsx';
 import Dialog from './Dialog.jsx';
 
-export default class ExerciseEditorController extends React.Component {
+export default class PlanEditorController extends React.Component {
     constructor(props) {
-        super();
         let settings = {
-                machine: '',
-                name: '',
-                note: '',
-                imageUrl: '',
-                setup: {},
-                image: ''
-            };
+            name: '',
+            note: '',
+            imageUrl: '',
+            exercises: []
+        }
+
+        super();
 
         if (props.defaultSettings) {
             settings = Object.assign(settings, props.defaultSettings);
@@ -28,22 +27,32 @@ export default class ExerciseEditorController extends React.Component {
                 title: 'Daten übertragen',
                 buttons: []
             }
-        };
+        }
     }
 
-    handleSubmit() {
+    setProperty(key, value) {
+        let newObj = Object.assign({}, this.state.settings);
+
+        newObj[key] = value;
+
+        this.setState({settings: newObj});
+    }
+
+    savePlan() {
+        console.log(this.state);
+
         let formData  = new FormData(),
             imageUpload;
 
-        formData.append('exerciseImage', this.state.settings.image);
+        formData.append('planImage', this.state.settings.image);
         this.setState(Object.assign({}, this.state, { dialogOptions: Object.assign({}, this.state.dialogOptions, {showDialog: true})}));
 
         if (this.state.settings.image) {
-            imageUpload = fetch('/api/exercise/image', {
+            imageUpload = fetch('/api/plan/image', {
                 method: 'post',
                 credentials: 'include',
                 headers: {
-                    'Accept': 'application/json, application/xml, text/plain, text/html, *.*'
+                    'Accept': 'application/json'
                 },
                 body: formData
             })
@@ -58,7 +67,7 @@ export default class ExerciseEditorController extends React.Component {
         }
 
         imageUpload.then(() => {
-            return fetch('/api/exercise', {
+            return fetch('/api/plan', {
                 headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json'
@@ -66,11 +75,10 @@ export default class ExerciseEditorController extends React.Component {
                 credentials: 'include',
                 method: "POST",
                 body: JSON.stringify({
-                    machine: this.state.settings.machine,
                     name: this.state.settings.name,
                     note: this.state.settings.note,
                     imageUrl: this.state.settings.imageUrl,
-                    setup: this.state.settings.setup,
+                    exercises: this.state.settings.exercises,
                     id: (this.state.settings.id ? this.state.settings.id : undefined)
                 })
             });
@@ -87,27 +95,18 @@ export default class ExerciseEditorController extends React.Component {
         });
     }
 
-    setProperty(key, value) {
-        let newObj = Object.assign({}, this.state.settings);
-
-        newObj[key] = value;
-
-        this.setState({settings: newObj});
-    }
-
     render() {
-        if (!this.props.show) {
-            return null;
-        }
 
         return (
-            <ExerciseEditor setProperty={(key, val) => this.setProperty(key, val)} handleSubmit={() => this.handleSubmit()} defaults={this.state.settings}>
+            <div>
                 <Dialog opts={this.state.dialogOptions}>
                     <div className="row margin-top">
                         <span className="fa fa-fw fa-cog slow-spin fa-3x" />
                     </div>
                 </Dialog>
-            </ExerciseEditor>
+                <PlanEditor defaults={this.state.settings} setProperty={(key, val) => this.setProperty(key, val)}></PlanEditor>
+                <button onClick={() => this.savePlan()}>Save</button>
+            </div>
         )
     }
 };

@@ -12,7 +12,7 @@ export default class DataInput extends React.Component {
 
     addRow() {
         this.setState({
-            array: this.state.array.concat((this.props.array ? Object.assign({}, this.props.array[0]) : {key: '', val: ''}))
+            array: this.state.array.concat({key: '', val: ''})
         });
     }
 

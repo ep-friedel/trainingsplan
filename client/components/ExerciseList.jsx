@@ -11,10 +11,8 @@ export default class ExerciseList extends React.Component {
         }
 
         let exercises = this.props.exercises.reduce((acc, exercise, index) => {
-            acc.push(<div className="exercise minified pointer" onClick={() => this.props.openEditor(index)}>
-                <div className="">
-                    <img className="exerciseImage" src={exercise.imageUrl} />
-                </div>
+            acc.push(<div className={"exerciseListRow pointer row " + (exercise.selected ? 'selected' : '')} onClick={() => this.props.selectItem(index)}>
+                    <img className="exerciseListImage" src={exercise.imageUrl} />
                 <h3>{exercise.machine} - {exercise.name}</h3>
             </div>);
 
@@ -23,6 +21,12 @@ export default class ExerciseList extends React.Component {
 
         return (
             <div className="exerciseList">
+                {this.props.showAddExercise ? (
+                    <div className="exerciseListRow pointer row" onClick={() => this.props.selectItem('new')}>
+                        <div className="fa fa-plus-circle exerciseListImage"></div>
+                        <h3>Neue Übung</h3>
+                    </div>
+                ) : null}
                 {exercises}
             </div>
         );

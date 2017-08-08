@@ -42,6 +42,8 @@ let setup = [
     `CREATE TABLE IF NOT EXISTS \`userlist\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`hash\` varchar(150) NOT NULL, \`salt\` varchar(150) NOT NULL, \`role\` varchar(150) NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`name\` (\`name\`) );`,
     `CREATE TABLE IF NOT EXISTS \`exercises\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`imageUrl\` TEXT NOT NULL, \`note\` TEXT NOT NULL, \`machine\` TEXT NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`name\` (\`name\`) );`,
     `CREATE TABLE IF NOT EXISTS \`exerciseSetup\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`exerciseId\` int NOT NULL, \`setting\` TEXT NOT NULL, \`type\` TEXT NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`id\` (\`id\`) );`,
+    `CREATE TABLE IF NOT EXISTS \`plans\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`imageUrl\` TEXT NOT NULL, \`note\` TEXT NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`name\` (\`name\`) );`,
+    `CREATE TABLE IF NOT EXISTS \`planExercises\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`planId\` int NOT NULL, \`position\` int NOT NULL, \`exerciseId\` int NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`id\` (\`id\`) );`,
 ];
 
 function setupDB() {

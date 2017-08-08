@@ -75,10 +75,12 @@ function jwtGetUser(token, retest) {
             resolve(userObject[0]);
         } else {
             log(6, 'jwtGetUser: user not found. Token: ' + JSON.stringify(token) + '. List: ' + JSON.stringify(userList));
-            if (retest) {
+            if (retest === true) {
+                log(6, 'jwtGetUser: refetched user list, didnt find user in refreshed list.');
                 return reject();
             }
 
+            log(6, 'jwtGetUser: refreshing user list.');
             return getUserList()
                 .then(() => {
                     return jwtGetUser(token, true);

@@ -8,10 +8,7 @@ const emptyExercise = {
         name: '',
         note: '',
         imageUrl: '',
-        setup: {
-            key: '',
-            val: 'number'
-        },
+        setup: {},
         image: ''
     };
 
@@ -63,9 +60,8 @@ export default class ExerciseListController extends React.Component {
         this.setState({
             showEditor: true,
             showExerciseList: false,
-            editorSettings: Object.assign({}, this.state.exercises[index])
-        }, () =>{
-            console.log(this.state);
+            editorSettings: (index === 'new') ? emptyExercise : Object.assign({}, this.state.exercises[index]),
+            currentIndex: (index === 'new') ? this.state.exercises.length : index
         });
     }
 
@@ -76,6 +72,18 @@ export default class ExerciseListController extends React.Component {
         });
     }
 
+    saveChanges(newObj) {
+        let newArr = this.state.exercises.concat([]);
+
+        newArr[this.state.currentIndex] = newObj;
+
+        this.setState({
+            showEditor: false,
+            showExerciseList: true,
+            exercises: newArr
+        });
+    }
+
     render() {
         return (<div>
             <Dialog opts={this.state.dialogOptions}>
@@ -83,8 +91,15 @@ export default class ExerciseListController extends React.Component {
                     <span className="fa fa-fw fa-cog slow-spin fa-3x" />
                 </div>
             </Dialog>
-            <ExerciseList exercises={this.state.exercises} openEditor={(index) => this.openEditor(index)} show={this.state.showExerciseList}></ExerciseList>
-            {(this.state.showEditor ? (<div><ExerciseEditorController defaultSettings={this.state.editorSettings} show={true}></ExerciseEditorController><button onClick={() => this.closeEditor()}>Abbrechen</button></div>) : null)}
+            <ExerciseList exercises={this.state.exercises} selectItem={(index) => this.openEditor(index)} show={this.state.showExerciseList} showAddExercise={true}></ExerciseList>
+            {(this.state.showEditor ? (
+                <div>
+                    <ExerciseEditorController submitCallback={changedSettings => this.saveChanges(changedSettings) } defaultSettings={this.state.editorSettings} show={true}></ExerciseEditorController>
+                    <div className="padding">
+                        <button className="fullWidthButton" onClick={() => this.closeEditor()}>Abbrechen</button>
+                    </div>
+                </div>) : null
+            )}
         </div>)
     }
 };

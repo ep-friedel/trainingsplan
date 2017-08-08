@@ -4,7 +4,7 @@ const	image 	    = require('express').Router()
 	,	error 		= require(process.env.TRAINER_HOME + 'modules/error')
     ,   multer      = require('multer')
     ,   storage     = multer.diskStorage({
-        destination: process.env.TRAINER_CLIENT + 'images/exercise/',
+        destination: process.env.TRAINER_CLIENT + 'images/plan/',
         filename: function (req, file, cb) {
             let splitfile = file.originalname.split('.'),
                 ending = splitfile[splitfile.length - 1];
@@ -15,9 +15,9 @@ const	image 	    = require('express').Router()
     ,   uploader    = multer({ storage: storage });
 
 
-image.post('/', uploader.single('exerciseImage'), (req, res, next) => {
+image.post('/', uploader.single('planImage'), (req, res, next) => {
     console.log(req.file);
-    res.status(200).json({url: '/images/exercise/' + req.file.filename});
+    res.status(200).json({url: '/images/plan' + req.file.filename});
 }, (err, req, res, next) => {
     res.status(500).send();
 });

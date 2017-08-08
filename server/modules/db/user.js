@@ -1,6 +1,7 @@
 const   getConnection   = require(process.env.TRAINER_HOME + 'modules/db')
     ,   mysql           = require('mysql')
-    ,   log             = require(process.env.TRAINER_HOME + 'modules/log');
+    ,   log             = require(process.env.TRAINER_HOME + 'modules/log')
+    ,   error           = require(process.env.TRAINER_HOME + 'modules/error');
 
 module.exports = {
     getUserObjectByProperty: (prop, val) => {
@@ -15,7 +16,7 @@ module.exports = {
                     resolve(result[0]);
                 }
             }));
-        });        
+        });
     },
 
     createUser: (options) => {
@@ -131,6 +132,6 @@ module.exports = {
                     resolve(result);
                 }
             }));
-        });        
+        });
     }
 }
