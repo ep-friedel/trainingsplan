@@ -39,11 +39,94 @@ let setup = [
     `CREATE DATABASE IF NOT EXISTS ${process.env.TRAINER_DB_NAME};`,
     `GRANT ALL PRIVILEGES ON ${process.env.TRAINER_DB_NAME}.* TO '${process.env.TRAINER_DB_USERNAME}'@'${process.env.TRAINER_DB_HOST}';`,
     `USE ${process.env.TRAINER_DB_NAME};`,
-    `CREATE TABLE IF NOT EXISTS \`userlist\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`hash\` varchar(150) NOT NULL, \`salt\` varchar(150) NOT NULL, \`role\` varchar(150) NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`name\` (\`name\`) );`,
-    `CREATE TABLE IF NOT EXISTS \`exercises\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`imageUrl\` TEXT NOT NULL, \`note\` TEXT NOT NULL, \`machine\` TEXT NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`name\` (\`name\`) );`,
-    `CREATE TABLE IF NOT EXISTS \`exerciseSetup\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`exerciseId\` int NOT NULL, \`setting\` TEXT NOT NULL, \`type\` TEXT NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`id\` (\`id\`) );`,
-    `CREATE TABLE IF NOT EXISTS \`plans\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`imageUrl\` TEXT NOT NULL, \`note\` TEXT NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`name\` (\`name\`) );`,
-    `CREATE TABLE IF NOT EXISTS \`planExercises\` ( \`id\` int NOT NULL AUTO_INCREMENT, \`planId\` int NOT NULL, \`position\` int NOT NULL, \`exerciseId\` int NOT NULL, PRIMARY KEY (id), UNIQUE KEY \`id\` (\`id\`) );`,
+
+    `CREATE TABLE IF NOT EXISTS \`userlist\` (
+        \`id\`      int             NOT NULL    AUTO_INCREMENT,
+        \`name\`    varchar(150)    NOT NULL,
+        \`hash\`    varchar(150)    NOT NULL,
+        \`salt\`    varchar(150)    NOT NULL,
+        \`role\`    varchar(150)    NOT NULL,
+
+        PRIMARY KEY (id),
+        UNIQUE KEY \`name\` (\`name\`)
+    );`,
+
+    `CREATE TABLE IF NOT EXISTS \`exercises\` (
+        \`id\`          int             NOT NULL    AUTO_INCREMENT,
+        \`name\`        varchar(150)    NOT NULL,
+        \`imageUrl\`    TEXT            NOT NULL,
+        \`note\`        TEXT            NOT NULL,
+        \`machine\`     TEXT            NOT NULL,
+
+        PRIMARY KEY (id),
+        UNIQUE KEY \`name\` (\`name\`)
+    );`,
+
+    `CREATE TABLE IF NOT EXISTS \`exerciseSetup\` (
+        \`id\`          int     NOT NULL    AUTO_INCREMENT,
+        \`exerciseId\`  int     NOT NULL,
+        \`setting\`     TEXT    NOT NULL,
+        \`type\`        TEXT    NOT NULL,
+
+        PRIMARY KEY (id),
+        UNIQUE KEY \`id\` (\`id\`)
+    );`,
+
+    `CREATE TABLE IF NOT EXISTS \`plans\` (
+        \`id\`          int             NOT NULL    AUTO_INCREMENT,
+        \`name\`        varchar(150)    NOT NULL,
+        \`imageUrl\`    TEXT            NOT NULL,
+        \`note\`        TEXT            NOT NULL,
+
+        PRIMARY KEY (id),
+        UNIQUE KEY \`name\` (\`name\`)
+    );`,
+
+    `CREATE TABLE IF NOT EXISTS \`planExercises\` (
+        \`id\`          int     NOT NULL    AUTO_INCREMENT,
+        \`planId\`      int     NOT NULL,
+        \`position\`    int     NOT NULL,
+        \`exerciseId\`  int     NOT NULL,
+
+        PRIMARY KEY (id),
+        UNIQUE KEY \`id\` (\`id\`)
+    );`,
+
+    `CREATE TABLE IF NOT EXISTS \`userPlanSettings\` (
+        id          int             NOT NULL    AUTO_INCREMENT,
+        userId      int             NOT NULL,
+        userPlanId  int             NOT NULL,
+        exerciseId  int             NOT NULL,
+        setting     varchar(150)    NOT NULL,
+        value       varchar(150)    NOT NULL,
+
+        PRIMARY KEY (id),
+        UNIQUE KEY \`id\` (\`id\`)
+    );`,
+
+    `CREATE TABLE IF NOT EXISTS \`userPlans\` (
+        id          int             NOT NULL    AUTO_INCREMENT,
+        userId      int             NOT NULL,
+        planId      int             NOT NULL,
+        active      int             NOT NULL,
+        note        TEXT,
+
+        PRIMARY KEY (id),
+        UNIQUE KEY \`id\` (\`id\`)
+        );`,
+
+    `CREATE TABLE ${mysql.escapeId('planHistory')} (
+        id          int             NOT NULL    AUTO_INCREMENT,
+        userid      int             NOT NULL,
+        exerciseid  int             NOT NULL,
+        repetition  int             NOT NULL,
+        reps        int             NOT NULL,
+        weight      int             NOT NULL,
+        timestamp   varchar(50)     NOT NULL,
+
+        PRIMARY KEY (id),
+        UNIQUE KEY \`id\` (\`id\`)
+    );`,
 ];
 
 function setupDB() {

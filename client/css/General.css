@@ -17,16 +17,23 @@
 .padding {
     padding: 1.5vh;
 }
+.padding-left {
+    padding-left: 1.5vh;
+}
+.padding-right {
+    padding-right: 1.5vh;
+}
 .fullWidthButton {
     width: 100%;
     font-size: 2.5vh;
     padding: 1vh 0;
     margin-top: 1vh;
-    background: #0F3B53;
+    background: #426e86;
     color: #f8f1e5;
     border: none;
-    border-radius: 0.3vh;
+    border-radius: .3vh;
     font-family: Raleway;
+    font-weight: bold;
 }
 .validityIconInside {
     max-width: 0px;
@@ -110,7 +117,7 @@
 }
 .labelButton {
     padding: 1vh 2vh;
-    background: #0f3b53;
+    background: #426e86;
     color: #f8f1e5;
     border-radius: 0.4vh;
     cursor: pointer;
@@ -119,6 +126,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: bold;
 }
 table {
     width: 100%;
@@ -157,6 +165,7 @@ input {
     text-align: center;
     background: #f8f1e5;
     border: solid 0.1vh #626464;
+    box-sizing: border-box;
 }
 textarea {
     background: #f8f1e5;
@@ -205,8 +214,6 @@ option {
     height: 100%;
     overflow-y: auto;
 }
-
-
 .fa.fa {
     font-family: Raleway;
 }

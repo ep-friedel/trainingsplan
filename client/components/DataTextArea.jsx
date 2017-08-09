@@ -19,7 +19,7 @@ export default class DataInput extends React.Component {
                 {
                     defaultValue: this.props.defaultValue,
                     onChange: (evt) => this.props.callback(evt.target.value),
-                    className: this.props.className ? this.props.className : 'width100',
+                    className: this.props.className ? this.props.className : 'width90',
                     onClick: (evt) => evt.target.select()
                 }
             ),

@@ -46,24 +46,28 @@ function reduceToExerciseObjectArray(result) {
 }
 
 module.exports = {
-    getPlanByProperty: (property, value) => {
+    getExerciseDetailsByPlanId: (userId, planId) => {
         const query = `
             SELECT
-                plans.id,
-                plans.name,
-                plans.imageUrl,
-                plans.note,
-                planExercises.position AS exercisePosition,
-                exercises.id AS exerciseId,
+                planExercises.exerciseId AS id,
+                planExercises.position,
                 exercises.name AS exerciseName,
                 exercises.imageUrl AS exerciseImageUrl,
-                exercises.machine AS exerciseMachine
-            FROM plans
+                exercises.machine AS exerciseMachine,
+                exercises.note AS exerciseNote,
+                userPlanSettings.setting AS exerciseSetupKey,
+                userPlanSettings.value AS exerciseSetupValue
+            FROM userPlans
             LEFT JOIN planExercises
-            ON plans.id = planExercises.planId
+            ON userPlans.planId = planExercises.planId
             LEFT JOIN exercises
             ON planExercises.exerciseId = exercises.id
-            WHERE plans.${property} = "${value}";`;
+            LEFT JOIN userPlanSettings
+            ON userPlanSettings.exerciseId = exercises.id
+            AND userPlanSettings.userId = "${userId}"
+            AND userPlanSettings.userPlanId = userPlans.id
+            WHERE userPlans.userId = "${userId}"
+            AND userPlans.id = "${planId}";`;
 
         return getConnection()
         .then (myDb => {
@@ -189,27 +193,21 @@ module.exports = {
 
             return error.db.codeError('modules/db/plan.js:createPlan', err);
         });
-
     },
 
-    getAllPlans: () => {
+    getAllPlans: (userId) => {
         const query = `
             SELECT
-                plans.id,
-                plans.name,
+                userPlans.id,
+                userPlans.active,
+                userPlans.planId,
                 plans.imageUrl,
-                plans.note,
-                planExercises.id AS planExerciseId,
-                planExercises.position AS exercisePosition,
-                exercises.id AS exerciseId,
-                exercises.name AS exerciseName,
-                exercises.imageUrl AS exerciseImageUrl,
-                exercises.machine AS exerciseMachine
-            FROM plans
-            LEFT JOIN planExercises
-            ON plans.id = planExercises.planId
-            LEFT JOIN exercises
-            ON planExercises.exerciseId = exercises.id;`;
+                plans.name,
+                COALESCE(NULLIF(userPlans.note,''), plans.note),
+            FROM userPlans
+            LEFT JOIN plans
+            ON userPlans.planId = plans.id
+            WHERE userPlans.userId = "${userId}";`;
 
         return getConnection()
         .then (myDb => {

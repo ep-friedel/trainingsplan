@@ -1,30 +1,34 @@
 import React from 'react';
-import PlanController from './PlanController.jsx';
-import '../css/PlanList.css';
 
 export default class PlanList extends React.Component {
     constructor(props) {
         super();
-
     }
 
     render() {
-        let tp,
-            tpList = [];
-
         if (!this.props.show) {
             return null;
         }
 
-        for (tp in this.props.plans) {
-            tpList.push(
-                <PlanController key={tp} dataId={tp} options={this.props.plans[tp]} currentPlan={this.props.currentPlan} userId={this.props.userId} setPlan={this.props.setPlan} />
-            );
-        }
+        let plans = this.props.plans.reduce((acc, plan, index) => {
+            acc.push(<div className={"exerciseListRow pointer row " + (plan.selected ? 'selected' : '')} onClick={() => this.props.selectItem(index)}>
+                    <img className="exerciseListImage" src={plan.imageUrl} />
+                <h3>{plan.name}</h3>
+            </div>);
+
+            return acc;
+        }, []);
+
         return (
-            <div className="planList">
-                {tpList}
+            <div className="exerciseList">
+                {this.props.showAddExercise ? (
+                    <div className="exerciseListRow pointer row" onClick={() => this.props.selectItem('new')}>
+                        <div className="fa fa-plus-circle exerciseListImage"></div>
+                        <h3>Neuer Trainingsplan</h3>
+                    </div>
+                ) : null}
+                {plans}
             </div>
-        )
+        );
     }
 }

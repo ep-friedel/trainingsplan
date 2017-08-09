@@ -17,7 +17,7 @@ const	image 	    = require('express').Router()
 
 image.post('/', uploader.single('planImage'), (req, res, next) => {
     console.log(req.file);
-    res.status(200).json({url: '/images/plan' + req.file.filename});
+    res.status(200).json({url: '/images/plan/' + req.file.filename});
 }, (err, req, res, next) => {
     res.status(500).send();
 });

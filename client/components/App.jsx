@@ -1,5 +1,4 @@
 import React from 'react';
-import PlanList from './PlanList.jsx';
 import Topbar from './Topbar.jsx';
 import LoginController from './LoginController.jsx';
 import Dashboard from './Dashboard.jsx';

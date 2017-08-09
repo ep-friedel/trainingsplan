@@ -20,47 +20,13 @@ module.exports = {
     },
 
     createUser: (options) => {
-        const queries = [
-            `CREATE TABLE ${mysql.escapeId('TP_' + options.name)} (
-                name        varchar(150)    NOT NULL,
-                active      varchar(150)    NOT NULL,
-                UNIQUE KEY \`name\` (\`name\`)
-            );`,
-            `CREATE TABLE ${mysql.escapeId('EX_' + options.name)} (
-                id          varchar(150)    NOT NULL,
-                plan        varchar(150)    NOT NULL,
-                repetitions varchar(10)     NOT NULL,
-                note        TEXT,
-                minRep      varchar(10)     NOT NULL,
-                maxRep      varchar(10)     NOT NULL,
-                setupValue1 varchar(10),
-                setupValue2 varchar(10),
-                setupValue3 varchar(10),
-                setupValue4 varchar(10),
-                setupValue5 varchar(10),
-                setupName1  varchar(50),
-                setupName2  varchar(50),
-                setupName3  varchar(50),
-                setupName4  varchar(50),
-                setupName5  varchar(50),
-                UNIQUE KEY \`id\` (\`id\`)
-                );`,
-            `CREATE TABLE ${mysql.escapeId('HIS_' + options.name)} (
-                id          varchar(150)    NOT NULL,
-                exercise    varchar(150)    NOT NULL,
-                repetition  varchar(10)     NOT NULL,
-                reps        varchar(10)     NOT NULL,
-                weight      varchar(10)     NOT NULL,
-                timestamp   varchar(50)     NOT NULL,
-                UNIQUE KEY \`id\` (\`id\`)
-            );`,
+        const query = [
             `INSERT INTO userlist (
                 name,
                 hash,
                 salt,
                 role
-            ) VALUES
-            (
+            ) VALUES (
                 ${mysql.escape(options.name)},
                 ${mysql.escape(options.hash)},
                 ${mysql.escape(options.salt)},
@@ -83,18 +49,16 @@ module.exports = {
                     }
                 }
             }))
-            .then(() => Promise.all(queries.map(query => {
-                return new Promise((resolve,reject) => {
-                    myDb.query(query, (err, result) => {
-                        if (err) {
-                            log(2, 'modules/db/user:createUser.2', err, query);
-                            reject({status: 500, message: 'Error creating user'});
-                        } else {
-                            resolve();
-                        }
-                    });
-                })
-            })))
+            .then(() => new Promise((resolve,reject) => {
+                myDb.query(query, (err, result) => {
+                    if (err) {
+                        log(2, 'modules/db/user:createUser.2', err, query);
+                        reject({status: 500, message: 'Error creating user'});
+                    } else {
+                        resolve();
+                    }
+                });
+            }))
             .then(() => {
                 log(6, 'User created, getting Id');
                 return new Promise((resolve, reject) => myDb.query(`select id, name, role from userlist where name = ${mysql.escape(options.name)};`, (err, result) => {

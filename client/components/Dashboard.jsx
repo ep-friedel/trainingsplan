@@ -1,8 +1,8 @@
 import React from 'react';
-import PlanList from './PlanList.jsx';
+import UserPlanList from './UserPlanList.jsx';
 import ExerciseEditorController from './ExerciseEditorController.jsx';
 import ExerciseListController from './ExerciseListController.jsx';
-import PlanEditorController from './PlanEditorController.jsx';
+import PlanListController from './PlanListController.jsx';
 import '../css/Dashboard.css';
 
 export default class Dashboard extends React.Component {
@@ -14,16 +14,16 @@ export default class Dashboard extends React.Component {
         return (
             <div className="dashBoard">
                 {(() => {switch(this.props.activePage) {
-                    case 'PlanList':
-                        return <PlanList userId={this.props.options.user.id} show={true} currentPlan={this.props.options.currentPlan} plans={this.props.options.plans} setPlan={this.props.setPlan}/>;
+                    case 'UserPlanList':
+                        return <UserPlanList userId={this.props.options.user.id} show={true} currentPlan={this.props.options.currentPlan} plans={this.props.options.plans} setPlan={this.props.setPlan}/>;
                     case 'ExerciseEditor':
                         return <ExerciseListController></ExerciseListController>;
                     case 'PlanEditor':
-                        return <PlanEditorController></PlanEditorController>;
+                        return <PlanListController></PlanListController>;
                     default:
                         return (
                             <ul>
-                                <li className="dashboardItem pointer column" onClick={() => this.props.openPage('PlanList')}>
+                                <li className="dashboardItem pointer column" onClick={() => this.props.openPage('UserPlanList')}>
                                     <span className="fa fa-play dashboardIcon"></span>
                                     <p>Training starten</p>
                                 </li>

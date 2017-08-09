@@ -42,28 +42,32 @@ export default class PlanEditor extends React.Component {
 
     render() {
         return (
-            <div className="padding">
-                <div className="row">
-                    <div className="column">
+            <div className="">
+                <div className="row stretch">
+                    <div className="column margin-right">
                         <DataInput defaultValue={this.props.defaults.name} callback={name => this.props.setProperty('name', name)} className="" name="Name" datatype="text" ></DataInput>
                         <DataTextArea defaultValue={this.props.defaults.note} callback={note => this.props.setProperty('note', note)} className="" name="Note" datatype="textfield" ></DataTextArea>
                     </div>
-                    <ImageUploader callback={image => this.props.setProperty('image', image)} opts={{imageUrl: this.props.defaults.imageUrl}}></ImageUploader>
+                    <div className="column margin-right">
+                        <ImageUploader callback={image => this.props.setProperty('image', image)} opts={{imageUrl: this.props.defaults.imageUrl}}></ImageUploader>
+                    </div>
                 </div>
                 <div>
                     <h3>Übungsverwaltung</h3>
-                    <button onClick={() => this.toggleModal(true)} >Übung hinzufügen</button>
-                    {this.props.defaults.exercises.map(exercise => {
-                        return (
-                            <div className="row">
-                                <img src={exercise.imgUrl} />
-                                <h3>{exercise.name}</h3>
-                            </div>
-                        );
-                    })}
+                    <button className="fullWidthButton" onClick={() => this.toggleModal(true)} >Übungen auswählen</button>
+                    <div className="exerciseList margin-bottom">
+                        {this.props.defaults.exercises.map(exercise => {
+                            return (
+                                <div className="row exerciseListRow">
+                                    <img className="exerciseListImage" src={exercise.imageUrl} />
+                                    <h3>{exercise.name}</h3>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
                 <Dialog opts={this.state} close={() => this.toggleModal(false)}>
-                    <ExerciseSelectionListController callback={exercises => {this.setState({exercises: exercises.filter((exercise) => exercise.selected)}); }}></ExerciseSelectionListController>
+                    <ExerciseSelectionListController exercises={this.props.exercises} callback={exercises => {this.setState({exercises: exercises.filter((exercise) => exercise.selected)}); }}></ExerciseSelectionListController>
                 </Dialog>
             </div>
         );
