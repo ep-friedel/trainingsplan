@@ -39,18 +39,20 @@ function reduceToExerciseObjectArray(result) {
     return arrayResult;
 }
 
+
 module.exports = {
     getExerciseDetailsByPlanId: (userId, planId) => {
         const query = `
             SELECT
                 planExercises.exerciseId AS id,
                 planExercises.position,
+                planExercises.repetitions,
                 exercises.name AS exerciseName,
                 exercises.imageUrl AS exerciseImageUrl,
                 exercises.machine AS exerciseMachine,
-                exercises.note AS exerciseNote,
                 userPlanSettings.setting AS exerciseSetupKey,
-                userPlanSettings.value AS exerciseSetupValue
+                userPlanSettings.value AS exerciseSetupValue,
+                COALESCE(NULLIF(planExercises.note,''), exercises.note) AS exerciseNote
             FROM userPlans
             LEFT JOIN planExercises
             ON userPlans.planId = planExercises.planId
@@ -77,45 +79,58 @@ module.exports = {
         });
     },
 
-    savePlan: (options) => {
+    savePlan: (userId, options) => {
         const queries = {
-            plan: `INSERT INTO plans (
-                            name,
-                            imageUrl,
+            plan: `INSERT INTO userPlans (
+                            ${options.id ? 'id,' : ''}
+                            userId,
+                            planId,
+                            active,
                             note
-                            ${options.id ? ', id' : ''}
                         ) VALUES
                         (
-                            ${mysql.escape(options.name)},
-                            ${mysql.escape(options.imageUrl)},
+                            ${(options.id !== undefined) ? mysql.escape(options.id) + ', ' : ''}
+                            ${mysql.escape(userId)},
+                            ${mysql.escape(options.planId)},
+                            ${mysql.escape(options.active)},
                             ${mysql.escape(options.note)}
-                            ${(options.id !== undefined) ? ', ' + mysql.escape(options.id) : ''}
                         )
                         ON DUPLICATE KEY UPDATE
-                        \`name\`=VALUES(\`name\`),
-                        \`imageUrl\`=VALUES(\`imageUrl\`),
+                        \`userId\`=VALUES(\`userId\`),
+                        \`planId\`=VALUES(\`planId\`),
+                        \`active\`=VALUES(\`active\`),
                         \`note\`=VALUES(\`note\`);`,
 
-            setupDelete: `DELETE FROM planExercises WHERE planId = ${mysql.escape(options.id)} AND NOT id IN (${options.exercises.map(ex => mysql.escape(ex.id)).join(', ')} );`,
+            deleteUserPlanSettings: (exercises) =>  {
+                let exerciseDeleteConditionString = exercises.map(exercise => 
+                        `(exerciseId = ${mysql.escape(exercise.id)} AND NOT setting IN (${Object.keys(exercise.setup).map(str => mysql.escape(str)).join(', ')}))`
+                    ).join(' OR ');
 
-            exercises: (planId, exerciseId, position, uId) => `INSERT INTO planExercises (
-                        planId,
+                return `DELETE FROM userPlanSettings 
+                    WHERE userPlanId = ${mysql.escape(options.id)}
+                    AND ${exerciseDeleteConditionString};`
+            },
+
+            settings: (exercises) => {
+                let insertString = exercises.map(exercise => Object.keys(exercise.setup).map(setupKey => `(
+                        ${mysql.escape(userId)},
+                        ${mysql.escape(options.id)},
+                        ${mysql.escape(exercise.id)},
+                        ${mysql.escape(setupKey)},
+                        ${mysql.escape(exercise.setup[setupKey])}
+                    )`).join(', ')).join(', ');
+
+                return `INSERT INTO userPlanSettings (
+                        userId,
+                        userPlanId,
                         exerciseId,
-                        position
-                        ${uId ? ', id' : ''}
+                        setting,
+                        value
                     ) VALUES
-                    (
-                        ${mysql.escape(planId)},
-                        ${mysql.escape(exerciseId)},
-                        ${mysql.escape(position)}
-                        ${uId ? ', ' + mysql.escape(uId) : ''}
-                    )
+                    ${insertString}
                     ON DUPLICATE KEY UPDATE
-                        \`planId\`=VALUES(\`planId\`),
-                        \`exerciseId\`=VALUES(\`exerciseId\`),
-                        \`position\`=VALUES(\`position\`);`,
-
-            getId: `SELECT id FROM plans WHERE name = ${mysql.escape(options.name)};`
+                        \`value\`=VALUES(\`value\`);`
+            }
         };
 
         return getConnection()
@@ -123,8 +138,8 @@ module.exports = {
             return new Promise((resolve,reject) => {
                 myDb.query(queries.plan, (err, result) => {
                     if (err) {
-                        log(2, 'Failed creating the plan', err, queries.plan);
-                        reject({status: 500, message: 'Error inputing basic plan data'});
+                        log(2, 'Failed creating the userPlan', err, queries.plan);
+                        reject({status: 500, message: 'Error inputing basic userPlan data'});
                     } else {
                         resolve();
                     }
@@ -132,43 +147,35 @@ module.exports = {
             })
             .then(() => {
                 if (options.id !== undefined) {
-                    log(6, 'Plan updated, deleting removed exercises');
-                    return new Promise((resolve, reject) => myDb.query(queries.setupDelete, (err, result) => {
-                        if (err) {
-                            log(2, 'Failed emptying setup table', err, queries.setupDelete);
-                            reject({status: 500, message: 'Error emptying setup table'});
-                        }
-                        resolve(options.id);
-                    }));
+                    log(6, 'UserPlan updated, deleting removed userPlanSettings');
+                    return new Promise((resolve, reject) => {
+                        myDb.query(queries.deleteUserPlanSettings(options.exercises), (err, result) => {
+                            if (err) {
+                                log(2, 'Failed emptying userPlanSettings table', err, queries.setupDelete);
+                                reject({status: 500, message: 'Error emptying userPlanSettings table'});
+                            }
+                            log(6, 'Cleaned all userPlanSettings', );
+                            resolve(options.id);
+                        });
+                    });
                 } else {
-                    log(6, 'Plan created, getting Id');
-                    return new Promise((resolve, reject) => myDb.query(queries.getId, (err, result) => {
-                        if (err) {
-                            log(2, 'Failed getting exercise id', err, queries.getId);
-                            reject({status: 500, message: 'Error getting exercise id after creation'});
-                        }
-                        resolve(result[0].id);
-                    }));
+                    log(6, 'UserPlan created');
+                    return Promise.resolve(result.insertId);
                 }
             })
             .then(id => {
-                let setting,
-                    promises;
+                log(6, 'Got Id, inserting userPlanSettings');
 
-                log(6, 'Got Id, inserting exercise list');
-
-                promises = options.exercises.map((exercise, index) => new Promise((resolve, reject) => {
-                    myDb.query(queries.exercises(id, exercise.id, (index * 10), exercise.planExerciseId), (err, result) => {
+                return new Promise((resolve, reject) => {
+                    myDb.query(queries.settings(options.exercises), (err, result) => {
                         if (err) {
-                            log(2, 'Failed inserting setup settings', err, queries.setup(id, setting, options.setup[setting]));
-                            reject({status: 500, message: 'Error inserting setup settings'});
-                        } else {
-                            resolve();
+                            log(2, 'Failed inserting userPlanSettings', err, queries.setupDelete);
+                            reject({status: 500, message: 'Error inserting userPlanSettings'});
                         }
+                        log(6, 'Finished inserting userPlanSettings', );
+                        resolve();
                     });
-                }));
-
-                return Promise.all(promises);
+                });
             })
             .then(() => {
                 myDb.release();

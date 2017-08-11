@@ -109,16 +109,17 @@ module.exports = {
         return getConnection()
         .then (myDb => {
             return new Promise((resolve,reject) => {
+                log(6, 'Creating exercise');
                 myDb.query(queries.exercises, (err, result) => {
                     if (err) {
                         log(2, 'Failed creating the exercise', err, queries.exercises);
                         reject({status: 500, message: 'Error inputing basic exercise data'});
                     } else {
-                        resolve();
+                        resolve(result);
                     }
                 });
             })
-            .then(() => {
+            .then((oldResult) => {
                 if (options.id !== undefined) {
                     log(6, 'Exercise created, emptying setup table');
                     return new Promise((resolve, reject) => myDb.query(queries.setupDelete, (err, result) => {
@@ -129,14 +130,8 @@ module.exports = {
                         resolve(options.id);
                     }));
                 } else {
-                    log(6, 'Exercise created, getting Id');
-                    return new Promise((resolve, reject) => myDb.query(queries.getId, (err, result) => {
-                        if (err) {
-                            log(2, 'Failed getting exercise id', err, queries.getId);
-                            reject({status: 500, message: 'Error getting exercise id after creation'});
-                        }
-                        resolve(result[0].id);
-                    }));
+                    log(6, 'Exercise created');
+                    return Promise.resolve(oldResult.insertId);
                 }
             })
             .then(id => {

@@ -128,11 +128,11 @@ module.exports = {
                         log(2, 'Failed creating the plan', err, queries.plan);
                         reject({status: 500, message: 'Error inputing basic plan data'});
                     } else {
-                        resolve();
+                        resolve(result);
                     }
                 });
             })
-            .then(() => {
+            .then((oldResult) => {
                 if (options.id !== undefined) {
                     log(6, 'Plan updated, deleting removed exercises');
                     return new Promise((resolve, reject) => myDb.query(queries.setupDelete, (err, result) => {
@@ -143,14 +143,8 @@ module.exports = {
                         resolve(options.id);
                     }));
                 } else {
-                    log(6, 'Plan created, getting Id');
-                    return new Promise((resolve, reject) => myDb.query(queries.getId, (err, result) => {
-                        if (err) {
-                            log(2, 'Failed getting exercise id', err, queries.getId);
-                            reject({status: 500, message: 'Error getting exercise id after creation'});
-                        }
-                        resolve(result[0].id);
-                    }));
+                    log(6, 'Plan created');
+                    return Promise.resolve(oldResult.id);
                 }
             })
             .then(id => {

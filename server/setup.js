@@ -86,6 +86,8 @@ let setup = [
         \`id\`          int     NOT NULL    AUTO_INCREMENT,
         \`planId\`      int     NOT NULL,
         \`position\`    int     NOT NULL,
+        \`repetitions\` int     NOT NULL,
+        \`note\`        TEXT    NOT NULL,
         \`exerciseId\`  int     NOT NULL,
 
         PRIMARY KEY (id),
@@ -98,17 +100,17 @@ let setup = [
         userPlanId  int             NOT NULL,
         exerciseId  int             NOT NULL,
         setting     varchar(150)    NOT NULL,
-        value       varchar(150)    NOT NULL,
+        value       varchar(150),
 
         PRIMARY KEY (id),
-        UNIQUE KEY \`id\` (\`id\`)
+        UNIQUE KEY \`userPlanId\` (\`exerciseId\`, \`userPlanId\`, \`setting\`)
     );`,
 
     `CREATE TABLE IF NOT EXISTS \`userPlans\` (
         id          int             NOT NULL    AUTO_INCREMENT,
         userId      int             NOT NULL,
         planId      int             NOT NULL,
-        active      int             NOT NULL,
+        active      int,
         note        TEXT,
 
         PRIMARY KEY (id),

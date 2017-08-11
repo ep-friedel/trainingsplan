@@ -80,7 +80,7 @@ export default class ImageUploader extends React.Component {
                 <h3>{this.props.opts.title ? this.props.opts.title : 'Bild hochladen'}</h3>
                 <input type="file" name="exerciseImage" id={'imageUploader:' + id} className="hidden" onChange={(evt) => this.handleNewFile(evt)}/>
                 <div className="column alignCenter">
-                    <div className={(this.state.imageUrl.length ? '' : 'fa-picture-o ') + 'column imageContainer fa'}>
+                    <div className={(this.state.imageUrl.length ? '' : 'fa-picture-o ') + ' imageContainer fa'}>
                         <img src={this.state.imageUrl} />
                         <h5></h5>
                     </div>
