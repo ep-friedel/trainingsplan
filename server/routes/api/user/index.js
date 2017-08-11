@@ -16,7 +16,7 @@ user.get('/:user', error.router.validate('params', {
     }
 
 	userRequest.then((userObject) => {
-		res.status(200).send(userObject);
+		res.status(200).send(Object.assign({}, req.user, {salt: '', hash: ''}));
 	})
 	.catch(error.router.internalError(res));
 });

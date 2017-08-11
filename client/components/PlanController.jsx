@@ -28,14 +28,19 @@ export default class PlanController extends React.Component {
     }
 
     loadData() {
-        new Promise(res => setTimeout(res, 1000))
-            .then(() => {
-                this.setState(Object.assign({}, this.state, {loadingData: false, updateNeeded: false, exercises: plan}));
-            })
-            .catch(() => {
-                this.setState(Object.assign({}, this.state, {loadingData: false, updateNeeded: true}));
-                this.props.showAll();
-            });
+        fetch(`/api/trainingplans/${this.props.options.id}/exercises`, {
+            mode: 'same-origin',
+            credentials: 'include'
+        })
+        .then(res => Promise[(res.status >= 400) ? 'reject' : 'resolve'](res))
+        .then(res => res.json())
+        .then((data) => {
+            this.setState(Object.assign({}, this.state, {loadingData: false, updateNeeded: false, exercises: data}));
+        })
+        .catch(() => {
+            this.setState(Object.assign({}, this.state, {loadingData: false, updateNeeded: true}));
+            this.props.showAll();
+        });
     }
 
     saveResults(a, b) {
@@ -57,6 +62,16 @@ export default class PlanController extends React.Component {
             style = 'hidden';
         }
 
-        return <ExerciseList currentExercise={this.state.currentExercise} setExercise={(id) => this.setExercise(id)} exercises={this.state.exercises} mode={style} toggleMinimized={() => this.toggleMinimized()} planName={this.props.options.planName} planNotes={this.props.options.planNotes} saveNewResults={this.saveResults}/>
+        return <Plan
+            currentExercise={this.state.currentExercise}
+            setExercise={(id) => this.setExercise(id)}
+            exercises={this.state.exercises}
+            mode={style}
+            toggleMinimized={() => this.toggleMinimized()}
+            planName={this.props.options.name}
+            planNotes={this.props.options.note}
+            imageUrl={this.props.options.imageUrl}
+            saveNewResults={this.saveResults}
+        />
     }
 }

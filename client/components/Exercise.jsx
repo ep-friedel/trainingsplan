@@ -18,8 +18,8 @@ export default class Exercise extends React.Component {
             newResults: [],
             currentRep: {
                 repetition: 1,
-                reps: pastResults[pastResults.length - 1][0].reps,
-                weight: pastResults[pastResults.length - 1][0].weight
+                reps: pastResults.length ? pastResults[pastResults.length - 1][0].reps : 0,
+                weight: pastResults.length ? pastResults[pastResults.length - 1][0].weight : 0
             }
         };
 

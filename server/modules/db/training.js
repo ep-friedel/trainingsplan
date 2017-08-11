@@ -10,29 +10,23 @@ function reduceToExerciseObjectArray(result) {
 
     reducedResult = result.reduce((acc, row) => {
         if (acc[row.id]) {
-            acc[row.id].exercises.push({
-                id: row.exerciseId,
-                planExerciseId: row.planExerciseId,
-                name: row.exerciseName,
-                imageUrl: row.exerciseImageUrl,
-                machine: row.exerciseMachine,
-                position: row.exercisePosition
-            })
+            acc[row.id].setup[row.exerciseSetupKey] = row.exerciseSetupValue;
         } else {
+            let newObj = {}
+
+            if (row.exerciseSetupKey) {
+                newObj[row.exerciseSetupKey] = row.exerciseSetupValue;
+            }
+
             acc[row.id] = {
-                id: row.id,
-                name: row.name,
-                imageUrl: row.imageUrl,
-                note: row.note,
-                exercises: (row.exerciseId !== null) ? [{
-                    id: row.exerciseId,
-                    planExerciseId: row.planExerciseId,
+                    id: row.id,
+                    position: row.position,
                     name: row.exerciseName,
                     imageUrl: row.exerciseImageUrl,
                     machine: row.exerciseMachine,
-                    position: row.exercisePosition
-                }] : []
-            }
+                    note: row.exerciseNote,
+                    setup: newObj
+                }
         }
 
         return acc;
@@ -203,7 +197,7 @@ module.exports = {
                 userPlans.planId,
                 plans.imageUrl,
                 plans.name,
-                COALESCE(NULLIF(userPlans.note,''), plans.note),
+                COALESCE(NULLIF(userPlans.note,''), plans.note) AS note
             FROM userPlans
             LEFT JOIN plans
             ON userPlans.planId = plans.id
@@ -217,7 +211,36 @@ module.exports = {
                     log(2, 'Failed loading plan', err, query);
                     reject({status: 500, message: 'Unable to get plan.'});
                 } else {
-                    resolve(reduceToExerciseObjectArray(result));
+                    resolve(result);
+                }
+            }));
+        });
+    },
+
+    getPlanByProperty: (userId, property, value) => {
+        const query = `
+            SELECT
+                userPlans.id,
+                userPlans.active,
+                userPlans.planId,
+                plans.imageUrl,
+                plans.name,
+                COALESCE(NULLIF(userPlans.note,''), plans.note) AS note
+            FROM userPlans
+            LEFT JOIN plans
+            ON userPlans.planId = plans.id
+            WHERE userPlans.userId = "${userId}"
+            AND ${property} = "${value}";`;
+
+        return getConnection()
+        .then (myDb => {
+            return new Promise((resolve, reject) => myDb.query(query, (err, result) => {
+                myDb.release();
+                if (err) {
+                    log(2, 'Failed loading plan', err, query);
+                    reject({status: 500, message: 'Unable to get plan.'});
+                } else {
+                    resolve(result);
                 }
             }));
         });

@@ -56,7 +56,7 @@ export default class LoginController extends React.Component {
                     id: data.id,
                     role: data.role
                 },
-                plans: [],
+                plans: data.plans,
                 login: true
             })
         })

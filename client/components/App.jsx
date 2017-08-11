@@ -40,7 +40,7 @@ export default class App extends React.Component {
                         {
                             user: this.state.user,
                             currentPlan: this.state.currentPlan,
-                            plans: this.state.currentPlan
+                            plans: this.state.plans
                         }
                     } setPlan={(id) => this.setPlan(id)} activePage={this.state.activeDashboardPage} openPage={(arg) => this.openDashboardPage(arg)}/>
                     : null

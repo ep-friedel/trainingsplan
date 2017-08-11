@@ -37,7 +37,7 @@ export default class Plan extends React.Component {
 
     render() {
         let ex,
-            exerciseList = [];
+            exerciseList;
 
         switch(this.props.mode) {
             case 'hidden':
@@ -63,23 +63,22 @@ export default class Plan extends React.Component {
                 );
 
             case 'full':
-                for (ex in this.props.exercises) {
-                    exerciseList.push(React.createElement(
+                exerciseList = this.props.exercises
+                    .map((exercise, index) => React.createElement(
                         Exercise,
                         {
-                            details: this.props.exercises[ex].details,
-                            pastResults: this.props.exercises[ex].pastResults,
-                            key: ex,
-                            dataId: ex,
+                            details: exercise,
+                            pastResults: []/*this.props.exercises[ex].pastResults*/,
+                            key: index,
+                            dataId: index,
                             setExercise: this.props.setExercise,
-                            display: (this.props.currentExercise === -1) ? 'minified' : (this.props.currentExercise == ex) ? 'full' : 'hidden',
+                            display: (this.props.currentExercise === -1) ? 'minified' : (this.props.currentExercise == index) ? 'full' : 'hidden',
                             openModal: (opts) => this.openModal(opts),
                             closeModal: () => this.closeModal(),
                             saveNewResults: this.props.saveNewResults,
 
                         }
                     ));
-                }
 
                 return (<div className="wrapper">
                     <div className={"exerciseList" + (this.state.hideAll ? '' : ' minimized')}>

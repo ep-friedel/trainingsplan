@@ -3,6 +3,49 @@ const   getConnection   = require(process.env.TRAINER_HOME + 'modules/db')
     ,   log             = require(process.env.TRAINER_HOME + 'modules/log')
     ,   error           = require(process.env.TRAINER_HOME + 'modules/error');
 
+function reduceUserPlansToArray(result) {
+    let reducedResult,
+        arrayResult = [],
+        runvar;
+
+    reducedResult = result.reduce((acc, row) => {
+        if (acc[row.id]) {
+            acc[row.id].plans.push({
+                id: row.userPlanId,
+                active: row.planActive,
+                planId: row.planId,
+                imageUrl: row.planImageUrl,
+                name: row.planName,
+                note: row.planNote
+            });
+        } else {
+            acc[row.id] = {
+                id: row.id,
+                name: row.name,
+                hash: row.hash,
+                salt: row.salt,
+                role: row.role,
+                plans: row.userPlanId ? [{
+                    id: row.userPlanId,
+                    active: row.planActive,
+                    planId: row.planId,
+                    imageUrl: row.planImageUrl,
+                    name: row.planName,
+                    note: row.planNote
+                }] : []
+            };
+        }
+
+        return acc;
+    }, {});
+
+    for (runvar in reducedResult) {
+        arrayResult.push(reducedResult[runvar]);
+    }
+
+    return arrayResult;
+}
+
 module.exports = {
     getUserObjectByProperty: (prop, val) => {
         return getConnection()
@@ -87,13 +130,28 @@ module.exports = {
     getAllUserSettings: () => {
         return getConnection()
         .then (myDb => {
-            return new Promise((resolve, reject) => myDb.query(`select * from userlist`, (err, result) => {
+            const query = `
+                SELECT
+                    userlist.*,
+                    userPlans.id        AS userPlanId,
+                    userPlans.active    AS planActive,
+                    userPlans.planId,
+                    plans.imageUrl      AS planImageUrl,
+                    plans.name          AS planName,
+                    COALESCE(NULLIF(userPlans.note,''), plans.note) AS planNote
+                FROM userlist
+                LEFT JOIN userPlans
+                ON userlist.id = userPlans.userId
+                LEFT JOIN plans
+                ON userPlans.planId = plans.id;`;
+
+            return new Promise((resolve, reject) => myDb.query(query, (err, result) => {
                 myDb.release();
                 if (err) {
                     log(2, 'modules/db/user:getAllUserSettings', err);
                     reject({status: 500, message: 'Unable to get userlist.'});
                 } else {
-                    resolve(result);
+                    resolve(reduceUserPlansToArray(result));
                 }
             }));
         });
