@@ -63,10 +63,10 @@ let setup = [
     );`,
 
     `CREATE TABLE IF NOT EXISTS \`exerciseSetup\` (
-        \`id\`          int     NOT NULL    AUTO_INCREMENT,
-        \`exerciseId\`  int     NOT NULL,
-        \`setting\`     TEXT    NOT NULL,
-        \`type\`        TEXT    NOT NULL,
+        \`id\`          int             NOT NULL    AUTO_INCREMENT,
+        \`exerciseId\`  int             NOT NULL,
+        \`setting\`     varchar(150)    NOT NULL,
+        \`type\`        TEXT            NOT NULL,
 
         PRIMARY KEY (id),
         UNIQUE KEY \`setting\` (\`setting\`, \`exerciseId\`)
@@ -91,7 +91,7 @@ let setup = [
         \`exerciseId\`  int     NOT NULL,
 
         PRIMARY KEY (id),
-        UNIQUE KEY \`id\` (\`id\`)
+        UNIQUE KEY \`planId\` (\`exerciseId\`, \`planId\`)
     );`,
 
     `CREATE TABLE IF NOT EXISTS \`userPlanSettings\` (
@@ -103,7 +103,7 @@ let setup = [
         value       varchar(150),
 
         PRIMARY KEY (id),
-        UNIQUE KEY \`userPlanId\` (\`exerciseId\`, \`userPlanId\`, \`setting\`)
+        UNIQUE KEY \`userPlanId\` (\`exerciseId\`, \`userPlanId\`, \`settingId\`)
     );`,
 
     `CREATE TABLE IF NOT EXISTS \`userPlans\` (
@@ -135,6 +135,7 @@ function setupDB() {
     myDb.query(setup[0], (err) => {
         if (err) {
             console.log(err);
+            console.log(setup[0]);
             process.exit(1);
         } else {
             setup = setup.slice(1);

@@ -48,7 +48,6 @@ export default class DataInput extends React.Component {
         } else if (type === 'select') {
             return (
                 <select className="maxWidth45 width45" data-index={index} data-type={dataType} onChange={evt => this.updateValue(evt.target)}>
-                    <option value="">Bitte auswählen</option>
                     {options.map(option => <option value={option.value} selected={(option.value === defaultValue) ? 'selected' : ''}>{option.name}</option>)}
                 </select>
             );

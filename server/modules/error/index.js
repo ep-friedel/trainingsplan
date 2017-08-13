@@ -11,8 +11,8 @@ module.exports = {
 	},
 
 	db: {
-		codeError: (err) => {
-			log(1, err);
+		codeError: (...err) => {
+			log(1, ...err);
 			return Promise.reject();
 		}
 	},

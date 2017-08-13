@@ -104,9 +104,9 @@ module.exports = {
                           WHERE exerciseId = ${mysql.escape(options.id)}
                           ${Object.keys(options.setup).length ? ('AND NOT setting in (' + mysql.escape(Object.keys(options.setup)) + ')') : ''};`,
 
-            setup: (setup) => {
+            setup: (setup, id) => {
                 let insertString = Object.keys(setup).map(setupKey => `(
-                    ${mysql.escape(options.id)},
+                    ${mysql.escape(id)},
                     ${mysql.escape(setupKey)},
                     ${mysql.escape(setup[setupKey])}
                 )`).join(', ');            
@@ -161,7 +161,7 @@ module.exports = {
 
             log(6, 'Got Id, inserting setup settings');
             return new Promise((resolve, reject) => {
-                myDb.query(queries.setup(options.setup), (err, result) => {
+                myDb.query(queries.setup(options.setup, id), (err, result) => {
                     myDb.release();
                     if (err) {
                         log(2, 'Failed inserting setup settings', err, queries.setup(options.setup));

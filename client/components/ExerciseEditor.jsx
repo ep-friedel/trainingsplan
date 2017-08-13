@@ -6,21 +6,6 @@ import ImageUploader from './ImageUploader.jsx';
 import '../css/Exercise.css';
 
 export default class ExerciseEditor extends React.Component {
-    /*
-        setProperty: function to set property on settings object
-        handleSubmit: cb on submit
-        defaults: {
-            machine
-            name
-            note
-            imageUrl
-            setup: {
-                key
-                val
-            }
-        }
-
-    */
     constructor(props) {
         super();
     }
