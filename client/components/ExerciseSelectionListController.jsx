@@ -6,7 +6,8 @@ export default class ExerciseSelectionListController extends React.Component {
         super();
 
         this.state = {
-            showExerciseList: true
+            showExerciseList: true,
+            exercises: props.exercises
         };
     }
 
@@ -23,7 +24,7 @@ export default class ExerciseSelectionListController extends React.Component {
     render() {
         return (
             <div>
-                <ExerciseList exercises={this.props.exercises} selectItem={(index) => this.toggleItem(index)} show={this.state.showExerciseList}></ExerciseList>
+                <ExerciseList exercises={this.state.exercises} selectItem={(index) => this.toggleItem(index)} show={this.state.showExerciseList}></ExerciseList>
             </div>);
     }
 };

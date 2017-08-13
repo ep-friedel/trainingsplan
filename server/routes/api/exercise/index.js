@@ -19,9 +19,9 @@ exercise.get('/',
 
 exercise.post('/',
     error.router.validate('body', {
-        name: /^[A-Za-z0-9\s]{5,50}$/,
+        name: /^[ÄÜÖäöüA-Za-z0-9\s]{5,50}$/,
         imageUrl: /^[\S]{0,150}$/,
-        machine: /^[A-Za-z0-9\s]{0,50}$/
+        machine: /^[ÄÜÖäöüA-Za-z0-9\s]{0,50}$/
     }),
     jwt.requireAuthentication,
     (req, res) => {

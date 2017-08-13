@@ -16,7 +16,7 @@ plan.get('/',
 
 plan.post('/',
     error.router.validate('body', {
-        name: /^[A-Za-z0-9\s]{5,50}$/,
+        name: /^[ÄÜÖäöüA-Za-z0-9\s]{5,50}$/,
         imageUrl: /^[\S]{0,150}$/
     }),
     jwt.requireAuthentication,

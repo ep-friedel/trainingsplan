@@ -20,6 +20,8 @@ export default class Dashboard extends React.Component {
                         return <ExerciseListController></ExerciseListController>;
                     case 'PlanEditor':
                         return <PlanListController></PlanListController>;
+                    case 'UserPlanEditor':
+                        return <UserPlanListController></UserPlanListController>;
                     default:
                         return (
                             <ul>
@@ -27,9 +29,13 @@ export default class Dashboard extends React.Component {
                                     <span className="fa fa-play dashboardIcon"></span>
                                     <p>Training starten</p>
                                 </li>
-                                <li className="dashboardItem pointer column" onClick={() => this.props.openPage('PlanEditor')}>
+                                <li className="dashboardItem pointer column" onClick={() => this.props.openPage('UserPlanEditor')}>
                                     <span className="fa fa-list-alt dashboardIcon"></span>
                                     <p>Trainingspläne verwalten</p>
+                                </li>
+                                <li className="dashboardItem pointer column" onClick={() => this.props.openPage('PlanEditor')}>
+                                    <span className="fa fa-list-alt dashboardIcon"></span>
+                                    <p>Trainingsplanvorlagen verwalten</p>
                                 </li>
                                 <li className="dashboardItem pointer column" onClick={() => this.props.openPage('ExerciseEditor')}>
                                     <span className="fa fa-wrench dashboardIcon"></span>

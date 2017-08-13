@@ -7,7 +7,7 @@ const	auth 	= require('express').Router()
 
 
 auth.post('/', error.router.validate('body', {
-	user: /^[A-Za-z0-9\s]{5,50}$/,
+	user: /^[ÄÜÖäöüA-Za-z0-9\s]{5,50}$/,
 	hash: /^[A-Za-z0-9\s+/]*$/
 }), (req, res) => {
     let userObj;

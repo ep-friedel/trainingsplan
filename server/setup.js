@@ -69,7 +69,7 @@ let setup = [
         \`type\`        TEXT    NOT NULL,
 
         PRIMARY KEY (id),
-        UNIQUE KEY \`id\` (\`id\`)
+        UNIQUE KEY \`setting\` (\`setting\`, \`exerciseId\`)
     );`,
 
     `CREATE TABLE IF NOT EXISTS \`plans\` (
@@ -99,7 +99,7 @@ let setup = [
         userId      int             NOT NULL,
         userPlanId  int             NOT NULL,
         exerciseId  int             NOT NULL,
-        setting     varchar(150)    NOT NULL,
+        settingId   int             NOT NULL,
         value       varchar(150),
 
         PRIMARY KEY (id),

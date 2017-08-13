@@ -5,7 +5,7 @@ const	user 	    = require('express').Router()
 
 
 user.get('/:user', error.router.validate('params', {
-	user: /^[A-Za-z0-9\s]{4,50}$/
+	user: /^[ÄÜÖäöüA-Za-z0-9\s]{4,50}$/
 }), jwt.requireAuthentication, (req, res) => {
     let userRequest;
 

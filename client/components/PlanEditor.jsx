@@ -25,7 +25,8 @@ export default class PlanEditor extends React.Component {
                 click: () => this.toggleModal(false)
             }],
 
-            exercises: []
+            exercises: [],
+            selectedExercises: props.defaults.exercises.map(exercise => exercise.id)
         };
     }
 
@@ -38,6 +39,14 @@ export default class PlanEditor extends React.Component {
     saveSelection() {
         this.props.setProperty('exercises', this.state.exercises);
         this.toggleModal(false);
+    }
+
+    handleExerciseSelectionChange(exercises) {
+        this.setState({exercises: exercises.filter((exercise) => exercise.selected)});
+    }
+
+    getDialogExercises() {
+        return this.props.exercises.map(exercise => Object.assign({}, exercise, {selected: this.state.selectedExercises.includes(exercise.id)}));
     }
 
     render() {
@@ -67,7 +76,10 @@ export default class PlanEditor extends React.Component {
                     </div>
                 </div>
                 <Dialog opts={this.state} close={() => this.toggleModal(false)}>
-                    <ExerciseSelectionListController exercises={this.props.exercises} callback={exercises => {this.setState({exercises: exercises.filter((exercise) => exercise.selected)}); }}></ExerciseSelectionListController>
+                    <ExerciseSelectionListController 
+                        exercises={this.getDialogExercises()} 
+                        callback={exercises => this.handleExerciseSelectionChange(exercises)}>
+                    </ExerciseSelectionListController>
                 </Dialog>
             </div>
         );

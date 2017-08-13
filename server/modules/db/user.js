@@ -63,8 +63,7 @@ module.exports = {
     },
 
     createUser: (options) => {
-        const query = [
-            `INSERT INTO userlist (
+        const query = `INSERT INTO userlist (
                 name,
                 hash,
                 salt,
@@ -75,11 +74,11 @@ module.exports = {
                 ${mysql.escape(options.salt)},
                 ${mysql.escape(options.role)}
             )
-            ON DUPLICATE KEY UPDATE \`name\` = \`name\`;`
-        ];
+            ON DUPLICATE KEY UPDATE \`name\` = \`name\`;`;
 
         return getConnection()
         .then (myDb => {
+            log(6, 'modules/db/user:createUser - got db connection');
             return new Promise((resolve, reject) => myDb.query(`select * from userlist where name = ${mysql.escape(options.name)}`, (err, result) => {
                 if (err) {
                     log(2, 'modules/db/user:createUser.1', err);
@@ -88,34 +87,30 @@ module.exports = {
                     if (result.length) {
                         reject({status: 400, message: 'User already exists.'})
                     } else {
+                        log(6, 'modules/db/user:createUser - Username not used yet');
                         resolve();
                     }
                 }
             }))
             .then(() => new Promise((resolve,reject) => {
                 myDb.query(query, (err, result) => {
+                    myDb.release();
                     if (err) {
                         log(2, 'modules/db/user:createUser.2', err, query);
                         reject({status: 500, message: 'Error creating user'});
                     } else {
-                        resolve();
+                        log(6, 'modules/db/user:createUser - User created');
+                        resolve({
+                            user: {
+                                name: options.name,
+                                role: options.role,
+                                id: result.insertId
+                            },
+                            success: true
+                        });
                     }
                 });
-            }))
-            .then(() => {
-                log(6, 'User created, getting Id');
-                return new Promise((resolve, reject) => myDb.query(`select id, name, role from userlist where name = ${mysql.escape(options.name)};`, (err, result) => {
-                    myDb.release();
-                    if (err) {
-                        log(2, 'modules/db/user:createUser.3', err, query);
-                        reject({status: 500, message: 'Error getting user id after creation'});
-                    }
-                    resolve({
-                        user: result[0],
-                        success: true
-                    });
-                }));
-            })
+            }));
         })
         .catch(err => {
             if (err && err.status) {

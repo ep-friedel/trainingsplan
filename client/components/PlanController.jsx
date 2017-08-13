@@ -28,7 +28,7 @@ export default class PlanController extends React.Component {
     }
 
     loadData() {
-        fetch(`/api/trainingplans/${this.props.options.id}/exercises`, {
+        fetch(`/api/userplans/${this.props.options.id}/exercises`, {
             mode: 'same-origin',
             credentials: 'include'
         })

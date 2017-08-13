@@ -66,6 +66,15 @@ module.exports = {
                     resolve(reduceToExerciseObjectArray(result));
                 }
             }));
+        })
+        .catch(err => {
+            myDb.release();
+            if (err && err.status) {
+                err.success = false;
+                return Promise.reject(err);
+            }
+
+            return error.db.codeError('modules/db/exercise.js:getExerciseByProperty', err);
         });
     },
 
@@ -91,23 +100,33 @@ module.exports = {
                         \`note\`=VALUES(\`note\`),
                         \`machine\`=VALUES(\`machine\`);`,
 
-            setupDelete: `DELETE FROM exerciseSetup WHERE exerciseId = ${mysql.escape(options.id)};`,
+            setupDelete: `DELETE FROM exerciseSetup 
+                          WHERE exerciseId = ${mysql.escape(options.id)}
+                          ${Object.keys(options.setup).length ? ('AND NOT setting in (' + mysql.escape(Object.keys(options.setup)) + ')') : ''};`,
 
-            setup: (id, setting, type) => `INSERT INTO exerciseSetup (
+            setup: (setup) => {
+                let insertString = Object.keys(setup).map(setupKey => `(
+                    ${mysql.escape(options.id)},
+                    ${mysql.escape(setupKey)},
+                    ${mysql.escape(setup[setupKey])}
+                )`).join(', ');            
+
+                return `INSERT INTO exerciseSetup (
                         exerciseId,
                         setting,
                         type
                     ) VALUES
-                    (
-                        ${mysql.escape(id)},
-                        ${mysql.escape(setting)},
-                        ${mysql.escape(type)}
-                    );`,
-            getId: `SELECT id FROM exercises WHERE name = ${mysql.escape(options.name)};`
+                    ${insertString}
+                    ON DUPLICATE KEY UPDATE \`type\`=VALUES(\`type\`);`
+            }
         };
 
+        let myDb;
+
         return getConnection()
-        .then (myDb => {
+        .then (Db => {
+            myDb = Db;
+
             return new Promise((resolve,reject) => {
                 log(6, 'Creating exercise');
                 myDb.query(queries.exercises, (err, result) => {
@@ -119,53 +138,48 @@ module.exports = {
                     }
                 });
             })
-            .then((oldResult) => {
-                if (options.id !== undefined) {
-                    log(6, 'Exercise created, emptying setup table');
-                    return new Promise((resolve, reject) => myDb.query(queries.setupDelete, (err, result) => {
-                        if (err) {
-                            log(2, 'Failed emptying setup table', err, queries.setupDelete);
-                            reject({status: 500, message: 'Error emptying setup table'});
-                        }
-                        resolve(options.id);
-                    }));
-                } else {
-                    log(6, 'Exercise created');
-                    return Promise.resolve(oldResult.insertId);
-                }
-            })
-            .then(id => {
-                let setting,
-                    promises = [];
-
-                log(6, 'Got Id, inserting setup settings');
-                for (setting in options.setup) {
-                    promises.push(new Promise((resolve, reject) => {
-                        myDb.query(queries.setup(id, setting, options.setup[setting]), (err, result) => {
-                            if (err) {
-                                log(2, 'Failed inserting setup settings', err, queries.setup(id, setting, options.setup[setting]));
-                                reject({status: 500, message: 'Error inserting setup settings'});
-                            } else {
-                                resolve();
-                            }
-                        });
-                    }))
-                }
-
-                return Promise.all(promises);
-            })
-            .then(() => {
-                myDb.release();
-                return {success: true};
-            })
         })
-        .catch(err => {
-            if (err && err.status) {
-                err.success = false;
-                return err;
+        .then((oldResult) => {
+            if (options.id !== undefined) {
+                log(6, 'Exercise created, deleting unused entries');
+                return new Promise((resolve, reject) => myDb.query(queries.setupDelete, (err, result) => {
+                    if (err) {
+                        log(2, 'Failed deleting unused entries', err, queries.setupDelete);
+                        reject({status: 500, message: 'Error deleting unused entries'});
+                    }
+                    resolve(options.id);
+                }));
+            } else {
+                log(6, 'Exercise created');
+                return Promise.resolve(oldResult.insertId);
+            }
+        })
+        .then(id => {
+            if (!Object.keys(options.setup).length) {
+                return;
             }
 
-            return error.db.codeError('modules/db/exercise.js:createExercise', arguments);
+            log(6, 'Got Id, inserting setup settings');
+            return new Promise((resolve, reject) => {
+                myDb.query(queries.setup(options.setup), (err, result) => {
+                    myDb.release();
+                    if (err) {
+                        log(2, 'Failed inserting setup settings', err, queries.setup(options.setup));
+                        reject({status: 500, message: 'Error inserting setup settings'});
+                    } else {
+                        resolve({success: true});
+                    }
+                });
+            });
+        })
+        .catch(err => {
+            myDb.release();
+            if (err && err.status) {
+                err.success = false;
+                return Promise.reject(err);
+            }
+
+            return error.db.codeError('modules/db/exercise.js:createExercise', err);
         });
 
     },
@@ -195,6 +209,15 @@ module.exports = {
                     resolve(reduceToExerciseObjectArray(result));
                 }
             }));
+        })
+        .catch(err => {
+            myDb.release();
+            if (err && err.status) {
+                err.success = false;
+                return Promise.reject(err);
+            }
+
+            return error.db.codeError('modules/db/exercise.js:getAllExercises', err);
         });
     }
 }

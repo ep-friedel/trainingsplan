@@ -50,7 +50,7 @@ module.exports = {
                 exercises.name AS exerciseName,
                 exercises.imageUrl AS exerciseImageUrl,
                 exercises.machine AS exerciseMachine,
-                userPlanSettings.setting AS exerciseSetupKey,
+                exerciseSetup.setting AS exerciseSetupKey,
                 userPlanSettings.value AS exerciseSetupValue,
                 COALESCE(NULLIF(planExercises.note,''), exercises.note) AS exerciseNote
             FROM userPlans
@@ -62,6 +62,9 @@ module.exports = {
             ON userPlanSettings.exerciseId = exercises.id
             AND userPlanSettings.userId = "${userId}"
             AND userPlanSettings.userPlanId = userPlans.id
+            LEFT JOIN exerciseSetup
+            ON exerciseSetup.exerciseId = exercises.id
+            AND exerciseSetup.id = userPlanSettings.settingId
             WHERE userPlans.userId = "${userId}"
             AND userPlans.id = "${planId}";`;
 
@@ -103,7 +106,8 @@ module.exports = {
 
             deleteUserPlanSettings: (exercises) =>  {
                 let exerciseDeleteConditionString = exercises.map(exercise => 
-                        `(exerciseId = ${mysql.escape(exercise.id)} AND NOT setting IN (${Object.keys(exercise.setup).map(str => mysql.escape(str)).join(', ')}))`
+                        `(exerciseId = ${mysql.escape(exercise.id)} 
+                        ${Object.keys(exercise.setup).length ? ('AND NOT settingId IN (' + mysql.escape(Object.keys(exercise.setup)) + ')') : ''})`
                     ).join(' OR ');
 
                 return `DELETE FROM userPlanSettings 
@@ -124,7 +128,7 @@ module.exports = {
                         userId,
                         userPlanId,
                         exerciseId,
-                        setting,
+                        settingId,
                         value
                     ) VALUES
                     ${insertString}
@@ -154,7 +158,7 @@ module.exports = {
                                 log(2, 'Failed emptying userPlanSettings table', err, queries.setupDelete);
                                 reject({status: 500, message: 'Error emptying userPlanSettings table'});
                             }
-                            log(6, 'Cleaned all userPlanSettings', );
+                            log(6, 'Cleaned all userPlanSettings');
                             resolve(options.id);
                         });
                     });
@@ -172,7 +176,7 @@ module.exports = {
                             log(2, 'Failed inserting userPlanSettings', err, queries.setupDelete);
                             reject({status: 500, message: 'Error inserting userPlanSettings'});
                         }
-                        log(6, 'Finished inserting userPlanSettings', );
+                        log(6, 'Finished inserting userPlanSettings');
                         resolve();
                     });
                 });

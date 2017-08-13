@@ -98,7 +98,9 @@ module.exports = {
                         \`imageUrl\`=VALUES(\`imageUrl\`),
                         \`note\`=VALUES(\`note\`);`,
 
-            setupDelete: `DELETE FROM planExercises WHERE planId = ${mysql.escape(options.id)} AND NOT id IN (${options.exercises.map(ex => mysql.escape(ex.id)).join(', ')} );`,
+            setupDelete: `DELETE FROM planExercises 
+                          WHERE planId = ${mysql.escape(options.id)} 
+                          ${(options.exercises.length) ? ('AND NOT id IN (' + options.exercises.map(ex => mysql.escape(ex.id)).join(', ') + ')') : ''};`,
 
             exercises: (planId, exerciseId, position, uId) => `INSERT INTO planExercises (
                         planId,
@@ -144,7 +146,7 @@ module.exports = {
                     }));
                 } else {
                     log(6, 'Plan created');
-                    return Promise.resolve(oldResult.id);
+                    return Promise.resolve(oldResult.insertId);
                 }
             })
             .then(id => {
@@ -156,7 +158,7 @@ module.exports = {
                 promises = options.exercises.map((exercise, index) => new Promise((resolve, reject) => {
                     myDb.query(queries.exercises(id, exercise.id, (index * 10), exercise.planExerciseId), (err, result) => {
                         if (err) {
-                            log(2, 'Failed inserting setup settings', err, queries.setup(id, setting, options.setup[setting]));
+                            log(2, 'Failed inserting setup settings', err, queries.exercises(id, exercise.id, (index * 10), exercise.planExerciseId));
                             reject({status: 500, message: 'Error inserting setup settings'});
                         } else {
                             resolve();

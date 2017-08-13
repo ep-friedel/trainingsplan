@@ -96,7 +96,6 @@ export default class PlanEditorController extends React.Component {
     }
 
     render() {
-
         return (
             <div className="padding">
                 <Dialog opts={this.state.dialogOptions}>
