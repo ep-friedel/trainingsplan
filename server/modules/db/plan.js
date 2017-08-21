@@ -45,6 +45,65 @@ function reduceToExerciseObjectArray(result) {
     return arrayResult;
 }
 
+function reduceExercisesAndSetup(rows) {
+    let reducedResult,
+        arrayResult = [],
+        runvar,
+        runvar2;
+
+    reducedResult = rows.reduce((acc, row) => {
+        if (acc[row.id]) {
+
+            if (acc[row.id].exercisesObj[row.exerciseId]) {
+                acc[row.id].exercisesObj[row.exerciseId].setup[row.exerciseSetupSetting] = row.exerciseSetupType;
+            } else {
+                acc[row.id].exercisesObj[row.exerciseId] = {
+                    id: row.exerciseId,
+                    planExerciseId: row.planExerciseId,
+                    name: row.exerciseName,
+                    imageUrl: row.exerciseImageUrl,
+                    machine: row.exerciseMachine,
+                    position: row.exercisePosition,
+                    setup: {[row.exerciseSetupSetting]: row.exerciseSetupType}
+                };
+            }
+        } else {
+
+            acc[row.id] = {
+                id: row.id,
+                name: row.name,
+                imageUrl: row.imageUrl,
+                note: row.note,
+                exercisesObj: (row.exerciseId !== null) ? {[row.exerciseId]: {
+                    id: row.exerciseId,
+                    planExerciseId: row.planExerciseId,
+                    name: row.exerciseName,
+                    imageUrl: row.exerciseImageUrl,
+                    machine: row.exerciseMachine,
+                    position: row.exercisePosition,
+                    setup: {[row.exerciseSetupSetting]: row.exerciseSetupType}
+                }} : []
+            }
+        }
+
+        return acc;
+    }, {});
+
+    for (runvar in reducedResult) {
+        reducedResult[runvar].exercises = [];
+
+        for (runvar2 in reducedResult[runvar].exercisesObj) {
+            reducedResult[runvar].exercises.push(reducedResult[runvar].exercisesObj[runvar2]);
+        }
+
+        delete reducedResult[runvar].exercisesObj;
+
+        arrayResult.push(reducedResult[runvar]);
+    }
+
+    return arrayResult;
+}
+
 module.exports = {
     getPlanByProperty: (property, value) => {
         const query = `
@@ -79,6 +138,44 @@ module.exports = {
         });
     },
 
+    getFullPlanByProperty: (property, value) => {
+        const query = `
+            SELECT
+                plans.id,
+                plans.name,
+                plans.imageUrl,
+                plans.note,
+                planExercises.position AS exercisePosition,
+                exercises.id AS exerciseId,
+                exercises.name AS exerciseName,
+                exercises.imageUrl AS exerciseImageUrl,
+                exercises.machine AS exerciseMachine,
+                exerciseSetup.setting AS exerciseSetupSetting,
+                exerciseSetup.type AS exerciseSetupType
+            FROM plans
+            LEFT JOIN planExercises
+            ON plans.id = planExercises.planId
+            LEFT JOIN exercises
+            ON planExercises.exerciseId = exercises.id
+            LEFT JOIN exerciseSetup
+            ON exerciseSetup.exerciseId = exercises.id
+            WHERE plans.${property} = "${value}";`;
+
+        return getConnection()
+        .then (myDb => {
+            return new Promise((resolve, reject) => myDb.query(query, (err, result) => {
+                myDb.release();
+                if (err) {
+                    log(2, 'Failed loading the plan', err, query);
+                    reject({status: 500, message: 'Unable to get plan.'});
+                } else {
+                    log(6, 'got full plan');
+                    resolve(reduceExercisesAndSetup(result));
+                }
+            }));
+        });
+    },
+
     savePlan: (options) => {
         const queries = {
             plan: `INSERT INTO plans (
@@ -98,8 +195,8 @@ module.exports = {
                         \`imageUrl\`=VALUES(\`imageUrl\`),
                         \`note\`=VALUES(\`note\`);`,
 
-            setupDelete: `DELETE FROM planExercises 
-                          WHERE planId = ${mysql.escape(options.id)} 
+            setupDelete: `DELETE FROM planExercises
+                          WHERE planId = ${mysql.escape(options.id)}
                           ${(options.exercises.length) ? ('AND NOT id IN (' + options.exercises.map(ex => mysql.escape(ex.id)).join(', ') + ')') : ''};`,
 
             exercises: (exercises, id) => {
@@ -107,7 +204,7 @@ module.exports = {
                     ${mysql.escape(id)},
                     ${mysql.escape(exercise.id)},
                     ${mysql.escape(index * 10)}
-                )`).join(', ');   
+                )`).join(', ');
 
 
                 return `INSERT INTO planExercises (
@@ -172,7 +269,7 @@ module.exports = {
                 err.success = false;
                 return err;
             }
-            
+
             return error.db.codeError('modules/db/plan.js:createPlan', err);
         });
 

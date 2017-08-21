@@ -11,7 +11,8 @@
 
 .dialog {
     background: #FFF9ED;
-    max-width: 55vh;
+    max-width: calc(25vh + 40vw);
+    max-height: 65vh;
     min-height: 150px;
     margin: 10vh auto 0;
     padding: 5px;
@@ -37,6 +38,8 @@
 .dialogBody {
     flex-grow: 20;
     padding: 10px;
+    overflow-y: auto;
+    flex-shrink: 10;
 }
 
 .dialogButton {

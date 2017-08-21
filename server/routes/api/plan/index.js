@@ -41,12 +41,21 @@ plan.get('/:id',
     (req, res) => {
         planDB.getPlanByProperty('id', req.params.id)
         .then(result => {
-            res.status(200).json(result);
+            res.status(200).json(result[0]);
         })
         .catch(error.router.internalError(res));
     }
 );
 
-
+plan.get('/:id/full',
+    jwt.requireAuthentication,
+    (req, res) => {
+        planDB.getFullPlanByProperty('id', req.params.id)
+        .then(result => {
+            res.status(200).json(result[0]);
+        })
+        .catch(error.router.internalError(res));
+    }
+);
 
 module.exports = plan;

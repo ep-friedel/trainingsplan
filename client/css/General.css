@@ -128,6 +128,14 @@
     justify-content: center;
     font-weight: bold;
 }
+.imageWrapper {
+    max-height: 8vh;
+    max-width: 8vh;
+}
+.imageWrapper img {
+    max-width: calc(100% - 0.5vh);
+    max-height: calc(100% - 0.5vh);
+}
 table {
     width: 100%;
     text-align: center;

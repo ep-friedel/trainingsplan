@@ -1,6 +1,6 @@
 import React from 'react';
 import UserPlanList from './UserPlanList.jsx';
-import ExerciseEditorController from './ExerciseEditorController.jsx';
+import UserPlansEditor from './UserPlansEditor.jsx';
 import ExerciseListController from './ExerciseListController.jsx';
 import PlanListController from './PlanListController.jsx';
 import '../css/Dashboard.css';
@@ -20,8 +20,8 @@ export default class Dashboard extends React.Component {
                         return <ExerciseListController></ExerciseListController>;
                     case 'PlanEditor':
                         return <PlanListController></PlanListController>;
-                    case 'UserPlanEditor':
-                        return <UserPlanListController></UserPlanListController>;
+                    case 'UserPlansEditor':
+                        return <UserPlansEditor plans={this.props.options.plans} savePlan={this.props.savePlan}></UserPlansEditor>;
                     default:
                         return (
                             <ul>
@@ -29,7 +29,7 @@ export default class Dashboard extends React.Component {
                                     <span className="fa fa-play dashboardIcon"></span>
                                     <p>Training starten</p>
                                 </li>
-                                <li className="dashboardItem pointer column" onClick={() => this.props.openPage('UserPlanEditor')}>
+                                <li className="dashboardItem pointer column" onClick={() => this.props.openPage('UserPlansEditor')}>
                                     <span className="fa fa-list-alt dashboardIcon"></span>
                                     <p>Trainingspläne verwalten</p>
                                 </li>
