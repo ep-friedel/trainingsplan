@@ -28,7 +28,7 @@ app.set('x-powered-by', false);
 // connect router
 app.use('/', routes);
 
-// if not connected to a route, deliver statis content
+// if not connected to a route, deliver static content
 app.use('/', express.static(process.env.TRAINER_CLIENT + ''));
 
 // if no route and no static content, redirect to index

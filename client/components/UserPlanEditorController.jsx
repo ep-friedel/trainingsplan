@@ -35,9 +35,14 @@ export default class UserPlanEditorController extends React.Component {
         })
         .then(res => res.json())
         .then((template) => {
+            let userPlanObject = Object.assign({}, template, {id: undefined}, this.props.plan);
+
+            userPlanObject.exercises = userPlanObject.exercises.map(exercise => {return {id: exercise.id, setup: {}};});
+
             this.setState({
                 initialized: true,
-                template: template
+                template: template,
+                userPlanObject
             });
         })
         .catch((err) => {
@@ -47,7 +52,7 @@ export default class UserPlanEditorController extends React.Component {
 
 
     handleSubmit() {
-        fetch(`/api/${this.props.planId}/`, {
+        fetch(`/api/userplans/`, {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
@@ -76,11 +81,21 @@ export default class UserPlanEditorController extends React.Component {
     }
 
     setProperty(key, value) {
-        let newObj = Object.assign({}, this.state.settings);
+        let newObj = Object.assign({}, this.state.userPlanObject);
 
         newObj[key] = value;
 
-        this.setState({settings: newObj});
+        this.setState({userPlanObject: newObj});
+    }
+
+    setSetupKey(exIndex, key, value) {
+        let newObj = Object.assign({}, this.state.userPlanObject.exercises[exIndex].setup),
+            newArr = this.state.userPlanObject.exercises.slice();
+
+        newObj[key] = value;
+        newArr[exIndex] = newObj;
+
+        this.setState({userPlanObject: Object.assign({}, this.state.userPlanObject, {exercises: newArr})});
     }
 
     render() {
@@ -91,8 +106,11 @@ export default class UserPlanEditorController extends React.Component {
                         <span className="fa fa-fw fa-cog slow-spin fa-3x" />
                     </div>
                 </Dialog>
-                <UserPlanEditor template={this.state.template} plan={this.state.plan} ></UserPlanEditor>
-                <button className="fullWidthButton">Speichern</button>
+                <UserPlanEditor template={this.state.template}
+                    plan={this.state.plan}
+                    setSetupKey={(exIndex, key, value) => this.setSetupKey(exIndex, key, value)}
+                    setProperty={(key, value) => this.setProperty(key, value)}></UserPlanEditor>
+                <button className="fullWidthButton margin-top">Speichern</button>
             </div>);
         }
         return (<div className="row margin-top">

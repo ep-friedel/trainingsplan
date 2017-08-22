@@ -10,9 +10,16 @@
 .column.alignCenter {
     align-items: center;
 }
+.row.start,
+.column.start {
+    justify-content: flex-start;
+}
 .column {
     display: flex;
     flex-direction: column;
+}
+.margin-center {
+    margin: 0 auto;
 }
 .padding {
     padding: 1.5vh;
@@ -52,6 +59,9 @@
 }
 .pointer {
     cursor: pointer;
+}
+*.no-margin {
+    margin: 0;
 }
 .margin {
     margin: 1.5vh;
@@ -130,11 +140,11 @@
 }
 .imageWrapper {
     max-height: 8vh;
-    max-width: 8vh;
+    width: 8vh;
 }
 .imageWrapper img {
-    max-width: calc(100% - 0.5vh);
-    max-height: calc(100% - 0.5vh);
+    max-width: 7vh;
+    max-height: 7vh;
 }
 table {
     width: 100%;

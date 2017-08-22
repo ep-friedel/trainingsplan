@@ -35,7 +35,7 @@ export default class Dashboard extends React.Component {
                                 </li>
                                 <li className="dashboardItem pointer column" onClick={() => this.props.openPage('PlanEditor')}>
                                     <span className="fa fa-list-alt dashboardIcon"></span>
-                                    <p>Trainingsplanvorlagen verwalten</p>
+                                    <p>Planvorlagen verwalten</p>
                                 </li>
                                 <li className="dashboardItem pointer column" onClick={() => this.props.openPage('ExerciseEditor')}>
                                     <span className="fa fa-wrench dashboardIcon"></span>

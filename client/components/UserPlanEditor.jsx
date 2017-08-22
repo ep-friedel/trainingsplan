@@ -1,4 +1,6 @@
 import React from 'react';
+import DataInput from './DataInput.jsx';
+import DataTextArea from './DataTextArea.jsx';
 
 export default class UserPlanEditor extends React.Component {
     constructor(props) {
@@ -6,42 +8,44 @@ export default class UserPlanEditor extends React.Component {
     }
 
     render() {
-        console.log(this.props)
         return (
-            <div>
-                <div className="colum">
-                    <div className="row">
-                        <h3>{this.props.template.name}</h3>
-                        <div className="imageWrapper">
+            <div className="margin-bottom">
+                <div className="colum margin-top">
+                    <div className="row alignCenter start width90 margin-center">
+                        <div className="imageWrapper margin-right">
                             <img src={this.props.template.imageUrl} className="exerciseListImage" />
                         </div>
+                        <h3 className="no-margin">{this.props.template.name}</h3>
                     </div>
-                    <div className="row">
-                        <h3>Mein Name:</h3>
-                        <input type="text" value={this.props.plan.name} onChange={(evt) => this.props.setProperty('name', evt.target.value)}/>
-                    </div>
-                    <div className="row">
-                        <h3>Aktiv:</h3>
-                        <input type="checkbox" checked={this.props.plan.active} onChange={(evt) => this.props.setProperty('active', evt.target.checked)}/>
-                    </div>
-                    <div className="row">
-                        <h3>Anmerkung:</h3>
-                        <textarea onChange={(evt) => this.props.setProperty('note', evt.target.value)}>{this.props.plan.note ? this.props.plan.note : this.props.template.note}</textarea>
-                    </div>
+                    <DataInput defaultValue={this.props.plan.name ? this.props.plan.name : this.props.template.name}
+                        callback={(value) => this.props.setProperty('name', value)}
+                        className=""
+                        name="Planname:"
+                        datatype="text"></DataInput>
+                    <DataInput defaultValue={this.props.plan.active}
+                        callback={(checked) => this.props.setProperty('active', checked)}
+                        className=""
+                        name="Aktiv:"
+                        datatype="checkbox"></DataInput>
+                    <DataTextArea defaultValue={this.props.plan.note ? this.props.plan.note : this.props.template.note}
+                        callback={note => this.props.setProperty('note', note)}
+                        className=""
+                        name="Anmerkungen:" ></DataTextArea>
                 </div>
                 {this.props.template.exercises.map((exercise, exIndex) => {
-                    return (<div className="column">
-                        <div className="row">
-                            <h3>{exercise.name}</h3>
-                            <div className="imageWrapper">
+                    return (<div className="column margin-top">
+                        <div className="row alignCenter start width90 margin-center margin-top">
+                            <div className="imageWrapper margin-right">
                                 <img src={exercise.imageUrl} className="exerciseListImage" />
                             </div>
+                            <h3 className="no-margin">{exercise.name}</h3>
                         </div>
                         {Object.keys(exercise.setup).map(key => {
-                            return (<div className="row">
-                                <h4>{key}:</h4>
-                                <input type={exercise.setup[key]} onChange={() => this.props.setSetupKey(exIndex, key, this.value)} />
-                            </div>);
+                            return (<DataInput defaultValue={exercise.name}
+                            callback={value => this.props.setSetupKey(exIndex, key, value)}
+                            className=""
+                            name={key + ':'}
+                            datatype={exercise.setup[key]}></DataInput>);
                         })}
                     </div>)
                 })}

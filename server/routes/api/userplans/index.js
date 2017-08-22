@@ -1,12 +1,12 @@
 const   plan        = require('express').Router()
-    ,   planDB      = require(process.env.TRAINER_HOME + 'modules/db/training')
+    ,   trainingDB      = require(process.env.TRAINER_HOME + 'modules/db/training')
     ,   jwt         = require(process.env.TRAINER_HOME + 'modules/auth/jwt')
     ,   error       = require(process.env.TRAINER_HOME + 'modules/error');
 
 plan.get('/',
     jwt.requireAuthentication,
     (req, res) => {
-        planDB.getAllPlans(req.user.id)
+        trainingDB.getAllPlans(req.user.id)
         .then(result => {
             res.status(200).json(result);
         })
@@ -22,7 +22,7 @@ plan.post('/',
     jwt.requireAuthentication,
     (req, res) => {
         let action;
-        planDB.savePlan(req.body)
+        trainingDB.savePlan(req.body)
         .then(() => {
             res.status(200).send();
         })
@@ -36,7 +36,7 @@ plan.get('/:id/exercises',
     }),
     jwt.requireAuthentication,
     (req, res) => {
-        planDB.getExerciseDetailsByPlanId(req.user.id, req.params.id)
+        trainingDB.getExerciseDetailsByPlanId(req.user.id, req.params.id)
         .then(result => {
             res.status(200).json(result);
         })
@@ -51,7 +51,7 @@ plan.get('/:id',
     }),
     jwt.requireAuthentication,
     (req, res) => {
-        planDB.getPlanByProperty(req.user.id, 'userPlans.id', req.params.id)
+        trainingDB.getPlanByProperty(req.user.id, 'userPlans.id', req.params.id)
         .then(result => {
             res.status(200).json(result[0]);
         })
