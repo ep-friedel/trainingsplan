@@ -46,13 +46,14 @@ module.exports = {
             SELECT
                 planExercises.exerciseId AS id,
                 planExercises.position,
-                planExercises.repetitions,
                 exercises.name AS exerciseName,
                 exercises.imageUrl AS exerciseImageUrl,
                 exercises.machine AS exerciseMachine,
                 exerciseSetup.setting AS exerciseSetupKey,
                 userPlanSettings.value AS exerciseSetupValue,
-                COALESCE(NULLIF(planExercises.note,''), exercises.note) AS exerciseNote
+                COALESCE(NULLIF(planExercises.note,''), exercises.note) AS exerciseNote,
+                COALESCE(NULLIF(userPlanExerciseSettings.repetitions,''), planExercises.repetitions) AS exerciseRepetitions,
+                COALESCE(NULLIF(userPlanExerciseSettings.sets,''), planExercises.sets) AS exerciseSets
             FROM userPlans
             LEFT JOIN planExercises
             ON userPlans.planId = planExercises.planId
@@ -60,11 +61,13 @@ module.exports = {
             ON planExercises.exerciseId = exercises.id
             LEFT JOIN userPlanSettings
             ON userPlanSettings.exerciseId = exercises.id
-            AND userPlanSettings.userId = "${userId}"
             AND userPlanSettings.userPlanId = userPlans.id
             LEFT JOIN exerciseSetup
             ON exerciseSetup.exerciseId = exercises.id
             AND exerciseSetup.id = userPlanSettings.settingId
+            LEFT JOIN userPlanExerciseSettings
+            ON userPlanSettings.exerciseId = exercises.id
+            AND userPlanSettings.userPlanId = userPlans.id
             WHERE userPlans.userId = "${userId}"
             AND userPlans.id = "${planId}";`;
 
@@ -85,7 +88,7 @@ module.exports = {
     savePlan: (userId, options) => {
         const queries = {
             plan: `INSERT INTO userPlans (
-                            ${options.id ? 'id,' : ''}
+                            ${(options.id !== undefined) ? 'options.id,' : ''}
                             userId,
                             planId,
                             active,
@@ -105,19 +108,18 @@ module.exports = {
                         \`note\`=VALUES(\`note\`);`,
 
             deleteUserPlanSettings: (exercises) =>  {
-                let exerciseDeleteConditionString = exercises.map(exercise => 
-                        `(exerciseId = ${mysql.escape(exercise.id)} 
+                let exerciseDeleteConditionString = exercises.map(exercise =>
+                        `(exerciseId = ${mysql.escape(exercise.id)}
                         ${Object.keys(exercise.setup).length ? ('AND NOT settingId IN (' + mysql.escape(Object.keys(exercise.setup)) + ')') : ''})`
                     ).join(' OR ');
 
-                return `DELETE FROM userPlanSettings 
+                return `DELETE FROM userPlanSettings
                     WHERE userPlanId = ${mysql.escape(options.id)}
                     AND ${exerciseDeleteConditionString};`
             },
 
             settings: (exercises) => {
                 let insertString = exercises.map(exercise => Object.keys(exercise.setup).map(setupKey => `(
-                        ${mysql.escape(userId)},
                         ${mysql.escape(options.id)},
                         ${mysql.escape(exercise.id)},
                         ${mysql.escape(setupKey)},
@@ -125,11 +127,29 @@ module.exports = {
                     )`).join(', ')).join(', ');
 
                 return `INSERT INTO userPlanSettings (
-                        userId,
                         userPlanId,
                         exerciseId,
                         settingId,
                         value
+                    ) VALUES
+                    ${insertString}
+                    ON DUPLICATE KEY UPDATE
+                        \`value\`=VALUES(\`value\`);`
+            },
+
+            exercises: (exercises) => {
+                let insertString = exercises.map(exercise => `(
+                        ${mysql.escape(options.id)},
+                        ${mysql.escape(exercise.id)},
+                        ${mysql.escape(exercise.sets)},
+                        ${mysql.escape(exercise.repetitions)}
+                    )`).join(', ');
+
+                return `INSERT INTO userPlanExerciseSettings (
+                        userPlanId,
+                        exerciseId,
+                        sets,
+                        repetitions
                     ) VALUES
                     ${insertString}
                     ON DUPLICATE KEY UPDATE
@@ -145,11 +165,11 @@ module.exports = {
                         log(2, 'Failed creating the userPlan', err, queries.plan);
                         reject({status: 500, message: 'Error inputing basic userPlan data'});
                     } else {
-                        resolve();
+                        resolve(result);
                     }
                 });
             })
-            .then(() => {
+            .then((oldResult) => {
                 if (options.id !== undefined) {
                     log(6, 'UserPlan updated, deleting removed userPlanSettings');
                     return new Promise((resolve, reject) => {
@@ -164,7 +184,7 @@ module.exports = {
                     });
                 } else {
                     log(6, 'UserPlan created');
-                    return Promise.resolve(result.insertId);
+                    return Promise.resolve(oldResult.insertId);
                 }
             })
             .then(id => {

@@ -19,17 +19,14 @@ export default class UserPlanEditor extends React.Component {
                     </div>
                     <DataInput defaultValue={this.props.plan.name ? this.props.plan.name : this.props.template.name}
                         callback={(value) => this.props.setProperty('name', value)}
-                        className=""
                         name="Planname:"
                         datatype="text"></DataInput>
                     <DataInput defaultValue={this.props.plan.active}
                         callback={(checked) => this.props.setProperty('active', checked)}
-                        className=""
                         name="Aktiv:"
                         datatype="checkbox"></DataInput>
                     <DataTextArea defaultValue={this.props.plan.note ? this.props.plan.note : this.props.template.note}
                         callback={note => this.props.setProperty('note', note)}
-                        className=""
                         name="Anmerkungen:" ></DataTextArea>
                 </div>
                 {this.props.template.exercises.map((exercise, exIndex) => {
@@ -40,10 +37,19 @@ export default class UserPlanEditor extends React.Component {
                             </div>
                             <h3 className="no-margin">{exercise.name}</h3>
                         </div>
-                        {Object.keys(exercise.setup).map(key => {
-                            return (<DataInput defaultValue={exercise.name}
+                        <DataInput
+                            defaultValue={exercise.sets}
+                            callback={sets => this.props.setExerciseProperty(index, 'sets', sets)}
+                            name="Sätze"
+                            datatype="number" ></DataInput>
+                        <DataInput
+                            defaultValue={exercise.repetitions}
+                            callback={repetitions => this.props.setProperty(index, 'repetitions', repetitions)}
+                            name="Wiederholungen"
+                            datatype="text" ></DataInput>
+                        {Object.keys(exercise.setup).map((key) => {
+                            return (<DataInput defaultValue={(this.props.userplan && this.props.userplan.exercises) ? this.props.userplan.exercises[exIndex].setup[key] : ''}
                             callback={value => this.props.setSetupKey(exIndex, key, value)}
-                            className=""
                             name={key + ':'}
                             datatype={exercise.setup[key]}></DataInput>);
                         })}

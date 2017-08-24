@@ -22,7 +22,7 @@ plan.post('/',
     jwt.requireAuthentication,
     (req, res) => {
         let action;
-        trainingDB.savePlan(req.body)
+        trainingDB.savePlan(req.user.id, req.body)
         .then(() => {
             res.status(200).send();
         })

@@ -65,19 +65,21 @@ export default class PlanEditor extends React.Component {
                     <h3>Übungsverwaltung</h3>
                     <button className="fullWidthButton" onClick={() => this.toggleModal(true)} >Übungen auswählen</button>
                     <div className="exerciseList margin-bottom">
-                        {this.props.defaults.exercises.map(exercise => {
+                        {this.props.defaults.exercises.map((exercise, index) => {
                             return (
                                 <div className="row exerciseListRow">
                                     <img className="exerciseListImage" src={exercise.imageUrl} />
                                     <h3>{exercise.name}</h3>
+                                    <DataInput defaultValue={exercise.sets} callback={sets => this.props.setExerciseProperty(index, 'sets', sets)} className="" name="Sätze" datatype="number" ></DataInput>
+                                    <DataInput defaultValue={exercise.repetitions} callback={repetitions => this.props.setProperty(index, 'repetitions', repetitions)} className="" name="Wiederholungen" datatype="text" ></DataInput>
                                 </div>
                             );
                         })}
                     </div>
                 </div>
                 <Dialog opts={this.state} close={() => this.toggleModal(false)}>
-                    <ExerciseSelectionListController 
-                        exercises={this.getDialogExercises()} 
+                    <ExerciseSelectionListController
+                        exercises={this.getDialogExercises()}
                         callback={exercises => this.handleExerciseSelectionChange(exercises)}>
                     </ExerciseSelectionListController>
                 </Dialog>

@@ -38,6 +38,16 @@ export default class PlanEditorController extends React.Component {
         this.setState({settings: newObj});
     }
 
+    setExerciseProperty(index, key, value) {
+        let newObj = Object.assign({}, this.state.settings.exercises[index]),
+            exercises = this.state.settings.exercises.concat([]);
+
+        newObj[key] = value;
+        exercises[index] = newObj;
+
+        this.setState({settings: Object.assign({}, this.state.settings, {exercises: exercises})});
+    }
+
     savePlan() {
         console.log(this.state);
 

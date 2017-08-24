@@ -16,7 +16,9 @@ function reduceToExerciseObjectArray(result) {
                 name: row.exerciseName,
                 imageUrl: row.exerciseImageUrl,
                 machine: row.exerciseMachine,
-                position: row.exercisePosition
+                position: row.exercisePosition,
+                repetitions: row.exerciseRepetitions,
+                sets: row.exerciseSets
             })
         } else {
             acc[row.id] = {
@@ -30,7 +32,9 @@ function reduceToExerciseObjectArray(result) {
                     name: row.exerciseName,
                     imageUrl: row.exerciseImageUrl,
                     machine: row.exerciseMachine,
-                    position: row.exercisePosition
+                    position: row.exercisePosition,
+                    repetitions: row.exerciseRepetitions,
+                    sets: row.exerciseSets
                 }] : []
             }
         }
@@ -64,6 +68,8 @@ function reduceExercisesAndSetup(rows) {
                     imageUrl: row.exerciseImageUrl,
                     machine: row.exerciseMachine,
                     position: row.exercisePosition,
+                    repetitions: row.exerciseRepetitions,
+                    sets: row.exerciseSets,
                     setup: {[row.exerciseSetupSetting]: row.exerciseSetupType}
                 };
             }
@@ -81,6 +87,8 @@ function reduceExercisesAndSetup(rows) {
                     imageUrl: row.exerciseImageUrl,
                     machine: row.exerciseMachine,
                     position: row.exercisePosition,
+                    repetitions: row.exerciseRepetitions,
+                    sets: row.exerciseSets,
                     setup: {[row.exerciseSetupSetting]: row.exerciseSetupType}
                 }} : []
             }
@@ -113,6 +121,8 @@ module.exports = {
                 plans.imageUrl,
                 plans.note,
                 planExercises.position AS exercisePosition,
+                planExercises.repetitions AS exerciseRepetitions,
+                planExercises.sets AS exerciseSets,
                 exercises.id AS exerciseId,
                 exercises.name AS exerciseName,
                 exercises.imageUrl AS exerciseImageUrl,
@@ -146,6 +156,8 @@ module.exports = {
                 plans.imageUrl,
                 plans.note,
                 planExercises.position AS exercisePosition,
+                planExercises.repetitions AS exerciseRepetitions,
+                planExercises.sets AS exerciseSets,
                 exercises.id AS exerciseId,
                 exercises.name AS exerciseName,
                 exercises.imageUrl AS exerciseImageUrl,
@@ -199,10 +211,24 @@ module.exports = {
                           WHERE planId = ${mysql.escape(options.id)}
                           ${(options.exercises.length) ? ('AND NOT id IN (' + options.exercises.map(ex => mysql.escape(ex.id)).join(', ') + ')') : ''};`,
 
+            deleteUserPlanExerciseSettings: `DELETE FROM userPlanExerciseSettings
+                LEFT JOIN userPlans
+                ON userPlanExerciseSettings.userPlanId = userPlans.id
+                WHERE userPlans.planId = ${mysql.escape(options.id)}
+                ${(options.exercises.length) ? ('AND NOT userPlanExerciseSettings.exerciseId IN (' + options.exercises.map(ex => mysql.escape(ex.id)).join(', ') + ')') : ''};`,
+
+            deleteUserPlanSettings: `DELETE FROM userPlanSettings
+                LEFT JOIN userPlans
+                ON userPlanSettings.userPlanId = userPlans.id
+                WHERE userPlans.planId = ${mysql.escape(options.id)}
+                ${(options.exercises.length) ? ('AND NOT userPlanSettings.exerciseId IN (' + options.exercises.map(ex => mysql.escape(ex.id)).join(', ') + ')') : ''};`,
+
             exercises: (exercises, id) => {
                 let insertString = exercises.map((exercise, index) => `(
                     ${mysql.escape(id)},
                     ${mysql.escape(exercise.id)},
+                    ${mysql.escape(exercise.sets)},
+                    ${mysql.escape(exercise.repetitions)},
                     ${mysql.escape(index * 10)}
                 )`).join(', ');
 
@@ -210,6 +236,8 @@ module.exports = {
                 return `INSERT INTO planExercises (
                         planId,
                         exerciseId,
+                        repetitions,
+                        sets,
                         position
                     ) VALUES
                     ${insertString}
@@ -237,13 +265,15 @@ module.exports = {
         .then((oldResult) => {
             if (options.id !== undefined) {
                 log(6, 'Plan updated, deleting removed exercises');
-                return new Promise((resolve, reject) => myDb.query(queries.setupDelete, (err, result) => {
-                    if (err) {
-                        log(2, 'Failed emptying setup table', err, queries.setupDelete);
-                        reject({status: 500, message: 'Error emptying setup table'});
-                    }
-                    resolve(options.id);
-                }));
+                return Promise.all(['setupDelete', 'deleteUserPlanExerciseSettings', 'deleteUserPlanSettings']
+                    .map(myQuery => new Promise((resolve, reject) => myDb.query(queries[myQuery], (err, result) => {
+                        if (err) {
+                            log(2, 'Failed emptying setup table', err, queries[myQuery]);
+                            reject({status: 500, message: 'Error emptying setup table'});
+                        }
+                        resolve(options.id);
+                    })))
+                );
             } else {
                 log(6, 'Plan created');
                 return Promise.resolve(oldResult.insertId);
@@ -284,6 +314,8 @@ module.exports = {
                 plans.note,
                 planExercises.id AS planExerciseId,
                 planExercises.position AS exercisePosition,
+                planExercises.repetitions AS exerciseRepetitions,
+                planExercises.sets AS exerciseSets,
                 exercises.id AS exerciseId,
                 exercises.name AS exerciseName,
                 exercises.imageUrl AS exerciseImageUrl,

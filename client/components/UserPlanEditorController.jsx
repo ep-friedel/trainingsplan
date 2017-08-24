@@ -52,6 +52,8 @@ export default class UserPlanEditorController extends React.Component {
 
 
     handleSubmit() {
+        console.log(this.state.userPlanObject);
+
         fetch(`/api/userplans/`, {
             headers: {
               'Accept': 'application/json',
@@ -59,19 +61,12 @@ export default class UserPlanEditorController extends React.Component {
             },
             credentials: 'include',
             method: "POST",
-            body: JSON.stringify({
-                machine: this.state.settings.machine,
-                name: this.state.settings.name,
-                note: this.state.settings.note,
-                imageUrl: this.state.settings.imageUrl,
-                setup: this.state.settings.setup,
-                id: (this.state.settings.id ? this.state.settings.id : undefined)
-            })
+            body: JSON.stringify(this.state.userPlanObject)
         })
         .then(() => {
             this.setState({ dialogOptions: Object.assign({}, this.state.dialogOptions, {showDialog: false})});
             if (this.props.submitCallback) {
-                this.props.submitCallback(this.state.settings);
+                this.props.submitCallback(this.state.userPlanObject);
             }
         })
         .catch((err) => {
@@ -88,14 +83,25 @@ export default class UserPlanEditorController extends React.Component {
         this.setState({userPlanObject: newObj});
     }
 
-    setSetupKey(exIndex, key, value) {
-        let newObj = Object.assign({}, this.state.userPlanObject.exercises[exIndex].setup),
-            newArr = this.state.userPlanObject.exercises.slice();
+    setExerciseProperty(index, key, value) {
+        let newObj = Object.assign({}, this.state.userPlanObject.exercises[index]),
+            exercises = this.state.userPlanObject.exercises.concat([]);
 
         newObj[key] = value;
-        newArr[exIndex] = newObj;
+        exercises[index] = newObj;
 
-        this.setState({userPlanObject: Object.assign({}, this.state.userPlanObject, {exercises: newArr})});
+        this.setState({userPlanObject: Object.assign({}, this.state.userPlanObject, {exercises: exercises})});
+    }
+
+    setSetupKey(exIndex, key, value) {
+        console.log(this.state.userPlanObject.exercises);
+        let newObj = Object.assign({}, this.state.userPlanObject.exercises[exIndex].setup),
+            exercises = this.state.userPlanObject.exercises.concat([]);
+
+        newObj[key] = value;
+        exercises[exIndex].setup = newObj;
+
+        this.setState({userPlanObject: Object.assign({}, this.state.userPlanObject, {exercises: exercises})});
     }
 
     render() {
@@ -110,7 +116,7 @@ export default class UserPlanEditorController extends React.Component {
                     plan={this.state.plan}
                     setSetupKey={(exIndex, key, value) => this.setSetupKey(exIndex, key, value)}
                     setProperty={(key, value) => this.setProperty(key, value)}></UserPlanEditor>
-                <button className="fullWidthButton margin-top">Speichern</button>
+                <button className="fullWidthButton margin-top" onClick={() => this.handleSubmit()}>Speichern</button>
             </div>);
         }
         return (<div className="row margin-top">
