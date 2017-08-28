@@ -22,20 +22,32 @@ export default class UserPlansEditor extends React.Component {
         }
     }
 
+/*
+savePlan={(index, plan) => this.savePlan(index, plan)}
+
+    savePlan(index, plan) {
+        let newArr = this.state.plans.slice();
+
+        newArr[index] = plan;
+        this.setState({plans: newArr});
+    }
+*/
+
     componentDidMount() {
-        fetch(`/api/plan`, {
+        Promise.all(['/api/plan', '/api/userplans'].map(url => fetch(url, {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             },
             credentials: 'include',
             method: "GET"
-        })
-        .then(res => res.json())
-        .then((plans) => {
+        })))
+        .then(responses => Promise.all(responses.map(res => res.json())))
+        .then(responses => {
             this.setState({
                 initialized: true,
-                templates: plans
+                templates: responses[0],
+                plans: responses[1]
             });
         })
         .catch((err) => {
@@ -48,8 +60,8 @@ export default class UserPlansEditor extends React.Component {
             showEditor: (index === 'new') ? false : true,
             showPlanList: false,
             showSelectPlanDialog: (index === 'new') ? true : false,
-            index: ((index === 'new') ? 'new' : this.props.plans[index].planId),
-            currentPlan: {planId: ''}
+            index: ((index === 'new') ? 'new' : this.state.plans[index].planId),
+            currentPlan: ((index === 'new') ? {planId: ''} : this.state.plans[index])
         });
     }
 
@@ -84,7 +96,7 @@ export default class UserPlansEditor extends React.Component {
     render() {
         if (this.state.initialized) {
             return (<div>
-                <PlanList plans={this.props.plans} selectItem={(index) => this.handleSelect(index)} show={this.state.showPlanList} showAddExercise={true}></PlanList>
+                <PlanList plans={this.state.plans} selectItem={(index) => this.handleSelect(index)} show={this.state.showPlanList} showAddExercise={true}></PlanList>
                 {(this.state.showEditor ? (
                     <div>
                         <UserPlanEditorController plan={this.state.currentPlan} submitCallback={newObj => this.state.onSubmit(newObj)} ></UserPlanEditorController>
@@ -95,7 +107,7 @@ export default class UserPlansEditor extends React.Component {
                 )}
                 {(this.state.showSelectPlanDialog ? (
                     <Dialog opts={this.state.dialogOptions} close={() => this.closeEditor()}>
-                        <PlanList plans={this.state.templates} selectItem={(index) => this.selectPlanTemplate(index)} show={true} showAddExercise={false}></PlanList>
+                        <PlanList plans={this.state.templates} new={index === 'new'} selectItem={(index) => this.selectPlanTemplate(index)} show={true} showAddExercise={false}></PlanList>
                     </Dialog>) : null
                 )}
             </div>)

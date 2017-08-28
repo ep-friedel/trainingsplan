@@ -1,5 +1,5 @@
 import React from 'react';
-import UserPlanList from './UserPlanList.jsx';
+import UserPlanListController from './UserPlanListController.jsx';
 import UserPlansEditor from './UserPlansEditor.jsx';
 import ExerciseListController from './ExerciseListController.jsx';
 import PlanListController from './PlanListController.jsx';
@@ -15,13 +15,13 @@ export default class Dashboard extends React.Component {
             <div className="dashBoard">
                 {(() => {switch(this.props.activePage) {
                     case 'UserPlanList':
-                        return <UserPlanList userId={this.props.options.user.id} show={true} currentPlan={this.props.options.currentPlan} plans={this.props.options.plans} setPlan={this.props.setPlan}/>;
+                        return <UserPlanListController show={true}/>;
                     case 'ExerciseEditor':
                         return <ExerciseListController></ExerciseListController>;
                     case 'PlanEditor':
                         return <PlanListController></PlanListController>;
                     case 'UserPlansEditor':
-                        return <UserPlansEditor plans={this.props.options.plans} savePlan={this.props.savePlan}></UserPlansEditor>;
+                        return <UserPlansEditor></UserPlansEditor>;
                     default:
                         return (
                             <ul>

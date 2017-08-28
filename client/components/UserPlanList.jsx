@@ -18,7 +18,7 @@ export default class UserPlanList extends React.Component {
 
         for (tp in this.props.plans) {
             tpList.push(
-                <PlanController key={tp} dataId={tp} options={this.props.plans[tp]} currentPlan={this.props.currentPlan} userId={this.props.userId} setPlan={this.props.setPlan} />
+                <PlanController key={tp} dataId={tp} options={this.props.plans[tp]} currentPlan={this.props.currentPlan} setPlan={this.props.setPlan} />
             );
         }
         return (

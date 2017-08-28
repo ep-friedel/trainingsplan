@@ -113,7 +113,10 @@ export default class PlanEditorController extends React.Component {
                         <span className="fa fa-fw fa-cog slow-spin fa-3x" />
                     </div>
                 </Dialog>
-                <PlanEditor defaults={this.state.settings} exercises={this.props.exercises} setProperty={(key, val) => this.setProperty(key, val)}></PlanEditor>
+                <PlanEditor defaults={this.state.settings}
+                    exercises={this.props.exercises}
+                    setProperty={(key, val) => this.setProperty(key, val)}
+                    setExerciseProperty={(index, key, val) => this.setExerciseProperty(index, key, val)}></PlanEditor>
                 <button className="fullWidthButton" onClick={() => this.savePlan()}>Save</button>
             </div>
         )

@@ -99,7 +99,7 @@ let setup = [
         id          int             NOT NULL    AUTO_INCREMENT,
         userPlanId  int             NOT NULL,
         exerciseId  int             NOT NULL,
-        settingId   int             NOT NULL,
+        settingId   varchar(150)    NOT NULL,
         value       varchar(150),
 
         PRIMARY KEY (id),

@@ -18,7 +18,7 @@ export default class DataInput extends React.Component {
                 'input',
                 {
                     defaultValue: this.props.defaultValue,
-                    onChange: (evt) => this.props.callback((this.props.datatype ==='checkbox') ? evt.target.checked : evt.target.value),
+                    onChange: (evt) => this.props.callback((this.props.datatype === 'checkbox') ? evt.target.checked : evt.target.value),
                     className: this.props.className ? this.props.className : 'width90',
                     type: this.props.datatype ? this.props.datatype : 'text',
                     onClick: (evt) => evt.target.select()

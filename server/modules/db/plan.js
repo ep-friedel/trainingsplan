@@ -211,13 +211,15 @@ module.exports = {
                           WHERE planId = ${mysql.escape(options.id)}
                           ${(options.exercises.length) ? ('AND NOT id IN (' + options.exercises.map(ex => mysql.escape(ex.id)).join(', ') + ')') : ''};`,
 
-            deleteUserPlanExerciseSettings: `DELETE FROM userPlanExerciseSettings
+            deleteUserPlanExerciseSettings: `DELETE userPlanExerciseSettings.*
+                FROM userPlanExerciseSettings
                 LEFT JOIN userPlans
                 ON userPlanExerciseSettings.userPlanId = userPlans.id
                 WHERE userPlans.planId = ${mysql.escape(options.id)}
                 ${(options.exercises.length) ? ('AND NOT userPlanExerciseSettings.exerciseId IN (' + options.exercises.map(ex => mysql.escape(ex.id)).join(', ') + ')') : ''};`,
 
-            deleteUserPlanSettings: `DELETE FROM userPlanSettings
+            deleteUserPlanSettings: `DELETE userPlanSettings.*
+                FROM userPlanSettings
                 LEFT JOIN userPlans
                 ON userPlanSettings.userPlanId = userPlans.id
                 WHERE userPlans.planId = ${mysql.escape(options.id)}
@@ -236,12 +238,14 @@ module.exports = {
                 return `INSERT INTO planExercises (
                         planId,
                         exerciseId,
-                        repetitions,
                         sets,
+                        repetitions,
                         position
                     ) VALUES
                     ${insertString}
                     ON DUPLICATE KEY UPDATE
+                        \`repetitions\`=VALUES(\`repetitions\`),
+                        \`sets\`=VALUES(\`sets\`),
                         \`position\`=VALUES(\`position\`);`
             }
         };
@@ -271,21 +275,21 @@ module.exports = {
                             log(2, 'Failed emptying setup table', err, queries[myQuery]);
                             reject({status: 500, message: 'Error emptying setup table'});
                         }
-                        resolve(options.id);
+                        resolve();
                     })))
-                );
+                ).then(() => options.id);
             } else {
                 log(6, 'Plan created');
                 return Promise.resolve(oldResult.insertId);
             }
         })
-        .then(id => {
+        .then(planId => {
             log(6, 'Got Id, inserting exercise list');
             return new Promise((resolve, reject) => {
-                myDb.query(queries.exercises(options.exercises, id), (err, result) => {
+                myDb.query(queries.exercises(options.exercises, planId), (err, result) => {
                     myDb.release();
                     if (err) {
-                        log(2, 'Failed inserting setup settings', err, queries.exercises(options.exercises));
+                        log(2, 'Failed inserting setup settings', err, queries.exercises(options.exercises, planId));
                         reject({status: 500, message: 'Error inserting setup settings'});
                     } else {
                         resolve({success: true});

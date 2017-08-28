@@ -26,10 +26,12 @@ export default class Exercise extends React.Component {
         if (props.newResults) {
             this.state.newResults = props.newResults;
         } else {
-            for (i = 0; i < props.details.repetitions; i++) {
+            for (i = 0; i < props.details.sets; i++) {
                 this.state.newResults.push({reps: undefined, weight: undefined});
             }
         }
+
+        console.log(props);
     }
 
     changedReps(newNumber) {
@@ -86,7 +88,7 @@ export default class Exercise extends React.Component {
 
         changedResult[rep - 1] = Object.assign({}, s.newResults[rep - 1], {reps: cRep.reps, weight: cRep.weight})
 
-        if (this.props.details.repetitions > rep) {
+        if (this.props.details.sets > rep) {
             this.setState({
                 newResults: changedResult,
                 currentRep: Object.assign({}, cRep, {repetition: rep + 1})

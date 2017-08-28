@@ -30,6 +30,7 @@ export default class UserPlanEditor extends React.Component {
                         name="Anmerkungen:" ></DataTextArea>
                 </div>
                 {this.props.template.exercises.map((exercise, exIndex) => {
+                    console.log(exercise);
                     return (<div className="column margin-top">
                         <div className="row alignCenter start width90 margin-center margin-top">
                             <div className="imageWrapper margin-right">
@@ -39,12 +40,12 @@ export default class UserPlanEditor extends React.Component {
                         </div>
                         <DataInput
                             defaultValue={exercise.sets}
-                            callback={sets => this.props.setExerciseProperty(index, 'sets', sets)}
+                            callback={sets => this.props.setExerciseProperty(exIndex, 'sets', sets)}
                             name="Sätze"
                             datatype="number" ></DataInput>
                         <DataInput
                             defaultValue={exercise.repetitions}
-                            callback={repetitions => this.props.setProperty(index, 'repetitions', repetitions)}
+                            callback={repetitions => this.props.setExerciseProperty(exIndex, 'repetitions', repetitions)}
                             name="Wiederholungen"
                             datatype="text" ></DataInput>
                         {Object.keys(exercise.setup).map((key) => {

@@ -25,6 +25,7 @@ export default class UserPlanEditorController extends React.Component {
     }
 
     componentDidMount() {
+
         fetch(`/api/plan/${this.props.plan.planId}/full`, {
             headers: {
               'Accept': 'application/json',
@@ -52,8 +53,6 @@ export default class UserPlanEditorController extends React.Component {
 
 
     handleSubmit() {
-        console.log(this.state.userPlanObject);
-
         fetch(`/api/userplans/`, {
             headers: {
               'Accept': 'application/json',
@@ -94,7 +93,6 @@ export default class UserPlanEditorController extends React.Component {
     }
 
     setSetupKey(exIndex, key, value) {
-        console.log(this.state.userPlanObject.exercises);
         let newObj = Object.assign({}, this.state.userPlanObject.exercises[exIndex].setup),
             exercises = this.state.userPlanObject.exercises.concat([]);
 
@@ -115,7 +113,8 @@ export default class UserPlanEditorController extends React.Component {
                 <UserPlanEditor template={this.state.template}
                     plan={this.state.plan}
                     setSetupKey={(exIndex, key, value) => this.setSetupKey(exIndex, key, value)}
-                    setProperty={(key, value) => this.setProperty(key, value)}></UserPlanEditor>
+                    setProperty={(key, value) => this.setProperty(key, value)}
+                    setExerciseProperty={(index, key, val) => this.setExerciseProperty(index, key, val)}></UserPlanEditor>
                 <button className="fullWidthButton margin-top" onClick={() => this.handleSubmit()}>Speichern</button>
             </div>);
         }

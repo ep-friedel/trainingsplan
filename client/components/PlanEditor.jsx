@@ -71,7 +71,7 @@ export default class PlanEditor extends React.Component {
                                     <img className="exerciseListImage" src={exercise.imageUrl} />
                                     <h3>{exercise.name}</h3>
                                     <DataInput defaultValue={exercise.sets} callback={sets => this.props.setExerciseProperty(index, 'sets', sets)} className="" name="Sätze" datatype="number" ></DataInput>
-                                    <DataInput defaultValue={exercise.repetitions} callback={repetitions => this.props.setProperty(index, 'repetitions', repetitions)} className="" name="Wiederholungen" datatype="text" ></DataInput>
+                                    <DataInput defaultValue={exercise.repetitions} callback={repetitions => this.props.setExerciseProperty(index, 'repetitions', repetitions)} className="" name="Wiederholungen" datatype="text" ></DataInput>
                                 </div>
                             );
                         })}
